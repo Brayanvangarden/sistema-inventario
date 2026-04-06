@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<link rel="stylesheet" href="../styles/styles.css">
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>💄 Suplidora y Academia Style</h2>
+
+    <div class="user-info" id="userInfo"></div>
+
+    <div class="menu-item" onclick="cargarVista('productos')">📦 Productos</div>
+    <div class="menu-item" onclick="cargarVista('usuarios')">👥 Usuarios</div>
+    <div class="menu-item">🧾 Ventas</div>
+    <div class="menu-item">🏪 Inventario</div>
+    <div class="menu-item">🏪 Tienda</div>
+
+    <div class="menu-item logout" onclick="logout()">🚪 Cerrar sesión</div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="content" id="contenido">
+    <h2>Bienvenido al sistema</h2>
+</div>
+
+<!-- SCRIPTS -->
+<script src="../js/productos.js"></script>
+<script src="../js/dashboard.js"></script>
+
+</body>
+</html>

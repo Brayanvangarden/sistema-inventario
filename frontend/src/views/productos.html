@@ -1,0 +1,38 @@
+<h2>📦 Gestión de Productos</h2>
+
+<button onclick="mostrarFormulario()">+ Nuevo Producto</button>
+
+<div id="formulario" style="display:none; margin-top:20px;">
+    <input type="hidden" id="idProducto">
+
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="text" id="codigo" placeholder="Código">
+
+    <select id="categoria"></select>
+
+    <input type="number" id="precio_compra" placeholder="Precio compra">
+    <input type="number" id="precio_venta" placeholder="Precio venta">
+
+    <br><br>
+
+    <button onclick="guardarProducto()">💾 Guardar</button>
+    <button onclick="cancelar()">❌ Cancelar</button>
+</div>
+
+<table border="1" style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Categoría</th>
+            <th>Precio Venta</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaProductos"></tbody>
+</table>
+<div style="margin-top: 10px;">
+    <button onclick="anterior()">⬅ Anterior</button>
+    <span id="paginaInfo">Página 1</span>
+    <button onclick="siguiente()">Siguiente ➡</button>
+</div>
