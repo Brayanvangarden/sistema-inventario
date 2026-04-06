@@ -173,21 +173,40 @@ function editar(id, nombre, codigo, id_categoria, precio_compra, precio_venta) {
 }
 
 // 🗑️ ELIMINAR
-async function eliminar(id) {
-  if (!confirm("¿Eliminar producto?")) return;
+let productoAEliminar = null;
 
-  try {
-    await fetch(`http://localhost:3000/api/productos/${id}`, {
-      method: "DELETE",
-    });
-
-    cargarProductos();
-  } catch (error) {
-    console.error(error);
-    alert("Error eliminando producto");
-  }
+function eliminar(id) {
+    productoAEliminar = id;
+    document.getElementById("modalEliminar").style.display = "flex";
 }
 
+function cerrarModal() {
+    document.getElementById("modalEliminar").style.display = "none";
+}
+
+async function confirmarEliminar() {
+    try {
+        const res = await fetch(`http://localhost:3000/api/productos/${productoAEliminar}`, {
+            method: 'DELETE'
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            mostrarToast(data.error || "Error al eliminar", "error");
+            return;
+        }
+
+        mostrarToast("🗑️ Producto eliminado correctamente");
+
+        cerrarModal();
+        await cargarProductos();
+
+    } catch (error) {
+        console.error(error);
+        mostrarToast("Error de conexión", "error");
+    }
+}
 function mostrarToast(mensaje, tipo = "success") {
   const toast = document.getElementById("toast");
 
