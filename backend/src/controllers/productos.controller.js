@@ -2,32 +2,35 @@ import { pool } from '../config/db.js';
 
 
 // 📦 GET PRODUCTOS (Ahora mostrará TODO, tenga o no inventario)
-router.get('/productos', async (req, res) => {
+export const getProductos = async (req, res) => {
     try {
+        // 🔥 PAGINACIÓN
+        const pagina = parseInt(req.query.page) || 1;
+        const limite = parseInt(req.query.limit) || 15;
+        const offset = (pagina - 1) * limite;
+
         const [rows] = await pool.query(`
             SELECT 
-                    p.id,
-                    p.nombre,
-                    p.codigo,
-                    p.id_categoria,
-                    c.nombre AS categoria,
-                    p.precio_compra,
-                    p.precio_venta
+                p.id,
+                p.nombre,
+                p.codigo,
+                p.id_categoria,
+                c.nombre AS categoria,
+                p.precio_compra,
+                p.precio_venta
             FROM productos p
             INNER JOIN categorias c ON p.id_categoria = c.id
             WHERE p.activo = 1
-            ORDER BY p.id DESC; -- Opcional: ver los más nuevos primero
-        `);
+            ORDER BY p.id DESC
+            LIMIT ? OFFSET ?
+        `, [limite, offset]);
 
         res.json(rows);
 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-});
-
-
-
+};
 
 // ➕ CREAR PRODUCTO
 export const createProducto = async (req, res) => {

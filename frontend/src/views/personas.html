@@ -1,0 +1,42 @@
+<h2>👥 Gestión de Personas</h2>
+
+<button onclick="mostrarFormulario()">+ Nueva Persona</button>
+
+<div id="formulario" style="display:none; margin-top:20px;">
+    <input type="hidden" id="idPersona">
+
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="text" id="apellido" placeholder="Apellido">
+    <input type="text" id="telefono" placeholder="Teléfono">
+    <input type="email" id="correo" placeholder="Correo">
+    <input type="text" id="direccion" placeholder="Dirección">
+
+    <br><br>
+
+    <button onclick="guardarPersona()">💾 Guardar</button>
+    <button onclick="cancelar()">❌ Cancelar</button>
+</div>
+
+<table border="1" style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaPersonas"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>
+
+<div id="modalEliminar" class="modal">
+  <div class="modal-content">
+    <p>¿Seguro que deseas eliminar está persona?</p>
+    <button onclick="confirmarEliminarPersona()">Sí</button>
+    <button onclick="cerrarModal()">Cancelar</button>
+  </div>
+</div>

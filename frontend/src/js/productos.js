@@ -22,7 +22,7 @@ async function cargarProductos() {
                     <td>${p.precio_venta}</td>
                     <td>
                         <button onclick="editar(${p.id}, \`${p.nombre}\`, \`${p.codigo}\`, ${p.id_categoria}, ${p.precio_compra}, ${p.precio_venta})">✏️</button>
-                        <button onclick="eliminar(${p.id})">🗑️</button>
+                        <button onclick="eliminarProducto(${p.id})">🗑️</button>
                     </td>
                 </tr>
             `;
@@ -175,7 +175,7 @@ function editar(id, nombre, codigo, id_categoria, precio_compra, precio_venta) {
 // 🗑️ ELIMINAR
 let productoAEliminar = null;
 
-function eliminar(id) {
+function eliminarProducto(id) {
     productoAEliminar = id;
     document.getElementById("modalEliminar").style.display = "flex";
 }
@@ -184,29 +184,23 @@ function cerrarModal() {
     document.getElementById("modalEliminar").style.display = "none";
 }
 
-async function confirmarEliminar() {
-    try {
-        const res = await fetch(`http://localhost:3000/api/productos/${productoAEliminar}`, {
-            method: 'DELETE'
-        });
+async function confirmarEliminarProducto() {
+    const res = await fetch(`http://localhost:3000/api/productos/${productoAEliminar}`, {
+        method: 'DELETE'
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!res.ok) {
-            mostrarToast(data.error || "Error al eliminar", "error");
-            return;
-        }
-
-        mostrarToast("🗑️ Producto eliminado correctamente");
-
-        cerrarModal();
-        await cargarProductos();
-
-    } catch (error) {
-        console.error(error);
-        mostrarToast("Error de conexión", "error");
+    if (!res.ok) {
+        mostrarToast(data.error || "Error", "error");
+        return;
     }
+
+    mostrarToast("🗑️ Producto eliminado");
+    cerrarModal();
+    cargarProductos();
 }
+
 function mostrarToast(mensaje, tipo = "success") {
   const toast = document.getElementById("toast");
 
