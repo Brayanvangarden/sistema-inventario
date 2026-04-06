@@ -21,7 +21,7 @@ async function cargarProductos() {
                     <td>${p.categoria || "Sin categoría"}</td>
                     <td>${p.precio_venta}</td>
                     <td>
-                        <button onclick="editar(${p.id}, \`${p.nombre}\`, \`${p.codigo}\`, ${p.id_categoria}, ${p.precio_compra}, ${p.precio_venta})">✏️</button>
+                        <button onclick="editarProducto(${p.id}, \`${p.nombre}\`, \`${p.codigo}\`, ${p.id_categoria}, ${p.precio_compra}, ${p.precio_venta})">✏️</button>
                         <button onclick="eliminarProducto(${p.id})">🗑️</button>
                     </td>
                 </tr>
@@ -76,8 +76,8 @@ function mostrarFormulario() {
 }
 
 // ❌ CANCELAR
-function cancelar() {
-  limpiar();
+function cancelarProducto() {
+  limpiarProducto();
   document.getElementById("formulario").style.display = "none";
 
   const titulo = document.querySelector("#formulario h3");
@@ -85,7 +85,7 @@ function cancelar() {
 }
 
 // 🧹 LIMPIAR FORM
-function limpiar() {
+function limpiarProducto() {
   document.getElementById("idProducto").value = "";
   document.getElementById("nombre").value = "";
   document.getElementById("codigo").value = "";
@@ -138,7 +138,7 @@ async function guardarProducto() {
       mostrarToast("Producto creado correctamente 💅");
     }
 
-    cancelar();
+    cancelarProducto();
     await cargarProductos();
   } catch (error) {
     console.error(error);
@@ -147,7 +147,7 @@ async function guardarProducto() {
 }
 
 // ✏️ EDITAR PRODUCTO
-function editar(id, nombre, codigo, id_categoria, precio_compra, precio_venta) {
+function editarProducto(id, nombre, codigo, id_categoria, precio_compra, precio_venta) {
   mostrarFormulario();
 
   // título dinámico

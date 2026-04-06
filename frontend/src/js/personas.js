@@ -16,7 +16,7 @@ async function cargarPersonas() {
                     <td>${p.correo}</td>
                     <td>${p.direccion}</td>
                     <td>
-                        <button onclick="editar(${p.id}, \`${p.nombre}\`, \`${p.apellido}\`, \`${p.telefono}\`, \`${p.correo}\`, \`${p.direccion}\`)">✏️</button>
+                        <button onclick="editarPersona(${p.id}, \`${p.nombre}\`, \`${p.apellido}\`, \`${p.telefono}\`, \`${p.correo}\`, \`${p.direccion}\`)">✏️</button>
                         <button onclick="eliminarPersona(${p.id})">🗑️</button>
                     </td>
                 </tr>
@@ -35,13 +35,13 @@ function mostrarFormulario() {
 }
 
 // ❌ CANCELAR
-function cancelar() {
-    limpiar();
+function cancelarPersona() {
+    limpiarPersona();
     document.getElementById('formulario').style.display = 'none';
 }
 
 // 🧹 LIMPIAR
-function limpiar() {
+function limpiarPersona() {
     document.getElementById('idPersona').value = '';
     document.getElementById('nombre').value = '';
     document.getElementById('apellido').value = '';
@@ -90,7 +90,7 @@ async function guardarPersona() {
 
         mostrarToast(id ? "✏️ Persona actualizada" : "✅ Persona creada");
 
-        cancelar();
+        cancelarPersona();
         await cargarPersonas();
 
     } catch (error) {
@@ -100,7 +100,7 @@ async function guardarPersona() {
 }
 
 // ✏️ EDITAR
-function editar(id, nombre, apellido, telefono, correo, direccion) {
+function editarPersona(id, nombre, apellido, telefono, correo, direccion) {
     mostrarFormulario();
 
     document.getElementById('idPersona').value = id;
