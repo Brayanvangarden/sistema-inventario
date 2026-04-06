@@ -43,4 +43,51 @@ router.post('/productos', async (req, res) => {
     }
 });
 
+// ✏️ UPDATE PRODUCTO
+router.put('/productos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, codigo, id_categoria, precio_compra, precio_venta } = req.body;
+
+        // 🔍 VALIDACIÓN
+        if (!nombre || !codigo || !id_categoria || !precio_compra || !precio_venta) {
+            return res.status(400).json({ error: "Todos los campos son obligatorios" });
+        }
+
+        // 🔍 VALIDAR QUE EXISTE
+        const [producto] = await pool.query(
+            "SELECT id FROM productos WHERE id = ? AND activo = 1",
+            [id]
+        );
+
+        if (producto.length === 0) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        // 🔍 VALIDAR DUPLICADO (EXCLUYENDO EL MISMO)
+        const [existe] = await pool.query(
+            "SELECT id FROM productos WHERE codigo = ? AND id != ?",
+            [codigo, id]
+        );
+
+        if (existe.length > 0) {
+            return res.status(400).json({ error: "El código ya existe" });
+        }
+
+        // 🔄 UPDATE
+        await pool.query(`
+            UPDATE productos 
+            SET nombre=?, codigo=?, id_categoria=?, precio_compra=?, precio_venta=?
+            WHERE id=?
+        `, [nombre, codigo, id_categoria, precio_compra, precio_venta, id]);
+
+        res.json({ message: "Producto actualizado correctamente" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
 export default router;

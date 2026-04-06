@@ -6,12 +6,13 @@ router.get('/productos', async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT 
-                p.id,
-                p.nombre,
-                p.codigo,
-                c.nombre AS categoria,
-                IFNULL(i.stock, 0) AS stock, -- Si no hay registro en inventario, muestra 0
-                p.precio_venta
+                    p.id,
+                    p.nombre,
+                    p.codigo,
+                    p.id_categoria,
+                    c.nombre AS categoria,
+                    p.precio_compra,
+                    p.precio_venta
             FROM productos p
             INNER JOIN categorias c ON p.id_categoria = c.id
             WHERE p.activo = 1
@@ -74,15 +75,32 @@ export const updateProducto = async (req, res) => {
             return res.status(400).json({ error: "Todos los campos son obligatorios" });
         }
 
-        const [result] = await pool.query(`
-            UPDATE productos 
-            SET nombre=?, codigo=?, id_categoria=?, precio_compra=?, precio_venta=?
-            WHERE id=? AND activo = 1
-        `, [nombre, codigo, id_categoria, precio_compra, precio_venta, id]);
+        // 🔍 VERIFICAR SI EXISTE
+        const [producto] = await pool.query(
+            "SELECT id FROM productos WHERE id = ? AND activo = 1",
+            [id]
+        );
 
-        if (result.affectedRows === 0) {
+        if (producto.length === 0) {
             return res.status(404).json({ error: "Producto no encontrado" });
         }
+
+        // 🔍 VALIDAR DUPLICADO (EXCLUYENDO EL MISMO ID)
+        const [existe] = await pool.query(
+            "SELECT id FROM productos WHERE codigo = ? AND id != ?",
+            [codigo, id]
+        );
+
+        if (existe.length > 0) {
+            return res.status(400).json({ error: "El código ya existe en otro producto" });
+        }
+
+        // 🔄 ACTUALIZAR
+        await pool.query(`
+            UPDATE productos 
+            SET nombre=?, codigo=?, id_categoria=?, precio_compra=?, precio_venta=?
+            WHERE id=?
+        `, [nombre, codigo, id_categoria, precio_compra, precio_venta, id]);
 
         res.json({ message: "Producto actualizado correctamente" });
 
