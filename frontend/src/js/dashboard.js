@@ -49,6 +49,13 @@ async function cargarVista(vista) {
         cargarPersonas();
       }, 50);
     }
+    if (vista === "usuarios") {
+    setTimeout(() => {
+        cargarUsuarios();
+        cargarPersonasSelect(); // 🔥 clave
+    }, 50);
+    }
+
   } catch (error) {
     console.error("Error cargando vista:", error);
     alert("Error cargando vista");

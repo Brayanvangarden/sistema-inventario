@@ -1,0 +1,50 @@
+<h2>👤 Gestión de Usuarios</h2>
+
+<button onclick="mostrarFormularioUsuario()">+ Nuevo Usuario</button>
+
+<div id="formularioUsuario" style="display:none; margin-top:20px;">
+    <input type="hidden" id="idUsuario">
+
+    <select id="id_persona">
+        <option value="">Seleccione persona</option>
+    </select>
+
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="contrasena" placeholder="Contraseña">
+    
+    <select id="id_rol">
+        <option value="1">Admin</option>
+        <option value="2">Usuario</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="guardarUsuario()">💾 Guardar</button>
+    <button onclick="cancelarUsuario()">❌ Cancelar</button>
+</div>
+
+<table border="1" style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>Persona</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaUsuarios"></tbody>
+</table>
+
+<!-- 🧁 MODAL -->
+<div id="modalEliminarUsuario" class="modal">
+  <div class="modal-content">
+    <h3>🗑️ Eliminar usuario</h3>
+    <p>¿Seguro que deseas eliminar este usuario?</p>
+
+    <button onclick="confirmarEliminarUsuario()">Eliminar</button>
+    <button onclick="cerrarModalUsuario()">Cancelar</button>
+  </div>
+</div>
+
+<div id="toastUsuario" class="toast"></div>
