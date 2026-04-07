@@ -1,44 +1,64 @@
-<h2>👥 Gestión de Personas</h2>
+<h2 style="text-align:center; color:#4FACFE; margin-bottom:20px;">👥 Gestión de Personas</h2>
 
-<button onclick="mostrarFormulario()">+ Nueva Persona</button>
-
-<div id="formulario" style="display:none; margin-top:20px;">
-    <input type="hidden" id="idPersona">
-
-    <input type="text" id="nombre" placeholder="Nombre">
-    <input type="text" id="apellido" placeholder="Apellido">
-    <input type="text" id="cedula" placeholder="Cédula">
-    <input type="text" id="telefono" placeholder="Teléfono">
-    <input type="email" id="correo" placeholder="Correo">
-    <input type="text" id="direccion" placeholder="Dirección">
-
-    <br><br>
-
-    <button onclick="guardarPersona()">💾 Guardar</button>
-    <button onclick="cancelarPersona()">❌ Cancelar</button>
+<div style="text-align:center; margin-bottom:20px;">
+    <button onclick="mostrarFormulario()" style="padding:10px 20px; background-color:#4FACFE; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">+ Nueva Persona</button>
 </div>
 
-<table border="1" style="margin-top:20px;">
-    <thead>
+<!-- Formulario para crear/editar persona -->
+<div id="formulario" style="display:none; margin-top:20px; max-width:600px; margin-left:auto; margin-right:auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+    <input type="hidden" id="idPersona">
+
+    <div style="margin-bottom:15px;">
+        <input type="text" id="nombre" placeholder="Nombre" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="text" id="apellido" placeholder="Apellido" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="text" id="cedula" placeholder="Cédula" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="text" id="telefono" placeholder="Teléfono" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="email" id="correo" placeholder="Correo" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    <div style="margin-bottom:15px;">
+        <input type="text" id="direccion" placeholder="Dirección" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:10px;">
+        <button onclick="guardarPersona()" style="padding:10px 20px; background-color:#4FACFE; color:white; border:none; border-radius:6px; cursor:pointer;">💾 Guardar</button>
+        <button onclick="cancelarPersona()" style="padding:10px 20px; background-color:#ccc; color:#333; border:none; border-radius:6px; cursor:pointer;">❌ Cancelar</button>
+    </div>
+</div>
+
+<!-- Tabla de personas -->
+<table style="width:90%; margin:auto; margin-top:20px; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+    <thead style="background:#f2f2f2;">
         <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Cédula</th>
-            <th>Teléfono</th>
-            <th>Correo</th>
-            <th>Dirección</th>
-            <th>Acciones</th>
+            <th style="padding:12px;">Nombre</th>
+            <th style="padding:12px;">Apellido</th>
+            <th style="padding:12px;">Cédula</th>
+            <th style="padding:12px;">Teléfono</th>
+            <th style="padding:12px;">Correo</th>
+            <th style="padding:12px;">Dirección</th>
+            <th style="padding:12px;">Acciones</th>
         </tr>
     </thead>
     <tbody id="tablaPersonas"></tbody>
 </table>
 
+<!-- Notificación toast -->
 <div id="toast" class="toast"></div>
 
+<!-- Modal para eliminar persona -->
 <div id="modalEliminar" class="modal">
-  <div class="modal-content">
-    <p>¿Seguro que deseas eliminar está persona?</p>
-    <button onclick="confirmarEliminarPersona()">Sí</button>
-    <button onclick="cerrarModal()">Cancelar</button>
+  <div class="modal-content" style="width:350px;">
+    <p style="margin-bottom:15px;">¿Seguro que deseas eliminar está persona?</p>
+    <div style="display:flex; justify-content:center; gap:15px;">
+        <button onclick="confirmarEliminarPersona()" class="btn-eliminar">Sí</button>
+        <button onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+    </div>
   </div>
 </div>
