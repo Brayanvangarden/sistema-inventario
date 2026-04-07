@@ -1,6 +1,5 @@
 import { pool } from '../config/db.js';
 
-
 // 📦 GET PERSONAS
 export const getPersonas = async (req, res) => {
     try {
@@ -11,7 +10,8 @@ export const getPersonas = async (req, res) => {
                 p.apellido,
                 p.telefono,
                 p.correo,
-                p.direccion
+                p.direccion,
+                p.cedula
             FROM persona p
             WHERE p.activo = 1
             ORDER BY p.id DESC
@@ -28,10 +28,10 @@ export const getPersonas = async (req, res) => {
 // ➕ CREAR Persona
 export const createPersona = async (req, res) => {
     try {
-        const { nombre, apellido, telefono, correo, direccion } = req.body;
+        const { nombre, apellido, telefono, correo, direccion, cedula } = req.body;
 
         // 🔍 VALIDACIÓN
-        if (!nombre || !apellido || !telefono || !correo || !direccion) {
+        if (!nombre || !apellido || !telefono || !correo || !direccion || !cedula) {
             return res.status(400).json({ error: "Todos los campos son obligatorios" });
         }
 
@@ -47,9 +47,9 @@ export const createPersona = async (req, res) => {
 
         // ➕ INSERT
         await pool.query(`
-            INSERT INTO persona (nombre, apellido, telefono, correo, direccion)
-            VALUES (?, ?, ?, ?, ?)
-        `, [nombre, apellido, telefono, correo, direccion]);
+            INSERT INTO persona (nombre, apellido, telefono, correo, direccion, cedula)
+            VALUES (?, ?, ?, ?, ?,?)
+        `, [nombre, apellido, telefono, correo, direccion, cedula]);
 
         res.json({ message: "Persona creada correctamente" });
 
@@ -63,10 +63,10 @@ export const createPersona = async (req, res) => {
 export const updatePersona = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, apellido, telefono, correo, direccion } = req.body;
+        const { nombre, apellido, telefono, correo, direccion, cedula } = req.body;
 
         // 🔍 VALIDACIÓN
-        if (!nombre || !apellido || !telefono || !correo || !direccion) {
+        if (!nombre || !apellido || !telefono || !correo || !direccion || !cedula) {
             return res.status(400).json({ error: "Todos los campos son obligatorios" });
         }
 
@@ -93,9 +93,9 @@ export const updatePersona = async (req, res) => {
         // 🔄 UPDATE
         await pool.query(`
             UPDATE persona 
-            SET nombre=?, apellido=?, telefono=?, correo=?, direccion=?
+            SET nombre=?, apellido=?, telefono=?, correo=?, direccion=?, cedula=?
             WHERE id=?
-        `, [nombre, apellido, telefono, correo, direccion, id]);
+        `, [nombre, apellido, telefono, correo, direccion, cedula, id]);
 
         res.json({ message: "Persona actualizada correctamente" });
 
