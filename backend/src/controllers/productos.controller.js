@@ -4,12 +4,16 @@ import { pool } from '../config/db.js';
 // 📦 GET PRODUCTOS (Ahora mostrará TODO, tenga o no inventario)
 export const getProductos = async (req, res) => {
     try {
-        // 🔥 PAGINACIÓN
+        // Parámetros de paginación
         const pagina = parseInt(req.query.page) || 1;
         const limite = parseInt(req.query.limit) || 15;
         const offset = (pagina - 1) * limite;
 
-        const [rows] = await pool.query(`
+        // Parámetro de búsqueda
+        const { buscar } = req.query;
+
+        // Construcción dinámica de la consulta
+        let query = `
             SELECT 
                 p.id,
                 p.nombre,
@@ -21,12 +25,21 @@ export const getProductos = async (req, res) => {
             FROM productos p
             INNER JOIN categorias c ON p.id_categoria = c.id
             WHERE p.activo = 1
-            ORDER BY p.id DESC
-            LIMIT ? OFFSET ?
-        `, [limite, offset]);
+        `;
+
+        const params = [];
+
+        if (buscar && buscar.trim() !== '') {
+            query += ` AND LOWER(p.nombre) LIKE ?`;
+            params.push(`%${buscar.toLowerCase()}%`);
+        }
+
+        query += ` ORDER BY p.id DESC LIMIT ? OFFSET ?`;
+        params.push(limite, offset);
+
+        const [rows] = await pool.query(query, params);
 
         res.json(rows);
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -137,3 +150,4 @@ export const deleteProducto = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+

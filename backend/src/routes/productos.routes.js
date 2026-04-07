@@ -1,3 +1,5 @@
+// src/routes/productos.routes.js
+
 import { Router } from 'express';
 import {
     getProductos,
@@ -8,16 +10,10 @@ import {
 
 const router = Router();
 
-// 📦 OBTENER PRODUCTOS (con paginación desde controller)
+// Para paginación y listado general
 router.get('/productos', getProductos);
-
-// ➕ CREAR PRODUCTO
 router.post('/productos', createProducto);
-
-// ✏️ ACTUALIZAR PRODUCTO
 router.put('/productos/:id', updateProducto);
-
-// 🗑️ ELIMINAR PRODUCTO (soft delete)
 router.delete('/productos/:id', deleteProducto);
 
 export default router;

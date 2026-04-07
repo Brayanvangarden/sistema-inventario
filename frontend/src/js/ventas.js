@@ -2,7 +2,8 @@ let carrito = [];
 
 // 🔍 BUSCAR PRODUCTOS
 async function buscarProductos() {
-    const res = await fetch('http://localhost:3000/api/productos');
+    const textoBuscar = document.getElementById('busqueda').value;
+    const res = await fetch(`/api/productos?buscar=${encodeURIComponent(textoBuscar)}`);
     const data = await res.json();
 
     const tabla = document.getElementById('listaProductos');
