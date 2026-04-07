@@ -196,6 +196,19 @@ CREATE TABLE factura_detalle (
     FOREIGN KEY (id_producto) REFERENCES productos(id)
 ) ENGINE=InnoDB;
 
+
+CREATE TABLE metodos_pago (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
+INSERT INTO metodos_pago (nombre) VALUES
+('Efectivo'),
+('SINPE'),
+('Tarjeta'),
+('Transferencia');
+
+
 -- ==== 
 -- inserte persona
 -- ========
@@ -301,4 +314,95 @@ INSERT INTO factura_detalle (id_factura, id_producto, cantidad, precio, subtotal
 (1,1,2,3500,7000),
 (2,3,2,2500,5000);
 
+SELECT * FROM roles;
+select * from persona;
+
+INSERT INTO persona (nombre, apellido, telefono, correo, direccion) VALUES
+('Yensi','Quiros','9696969','yena@gmail.com','San José');
+
+ALTER TABLE factura 
+ADD COLUMN id_metodo_pago INT,
+ADD CONSTRAINT fk_metodo_pago 
+FOREIGN KEY (id_metodo_pago) REFERENCES metodos_pago(id);
+
+ALTER TABLE movimientos
+ADD COLUMN referencia VARCHAR(100),
+ADD COLUMN id_factura INT;
+
+ALTER TABLE inventario 
+ADD UNIQUE (id_producto);
+
+
+DELIMITER //
+
+CREATE TRIGGER descontar_stock
+AFTER INSERT ON factura_detalle
+FOR EACH ROW
+BEGIN
+    UPDATE inventario
+    SET stock = stock - NEW.cantidad
+    WHERE id_producto = NEW.id_producto;
+
+    INSERT INTO movimientos (id_producto, tipo, cantidad, descripcion, fecha, referencia, id_factura)
+    VALUES (
+        NEW.id_producto,
+        'salida',
+        NEW.cantidad,
+        'Venta realizada',
+        NOW(),
+        CONCAT('Factura #', NEW.id_factura),
+        NEW.id_factura
+    );
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+-- CONTROL DE STOCK NEGATIVO
+
+DELIMITER //
+
+CREATE TRIGGER evitar_stock_negativo
+BEFORE INSERT ON factura_detalle
+FOR EACH ROW
+BEGIN
+    DECLARE stock_actual INT;
+
+    SELECT stock INTO stock_actual
+    FROM inventario
+    WHERE id_producto = NEW.id_producto;
+
+    IF stock_actual < NEW.cantidad THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock insuficiente';
+    END IF;
+END //
+
+DELIMITER ;
+
+
+-- 🔥 1. AGREGAR TIPO A PERSONA
+ALTER TABLE persona 
+ADD COLUMN tipo ENUM('cliente','usuario','proveedor') DEFAULT 'cliente';
+
+
+-- 🔥 2. ACTUALIZAR PERSONAS EXISTENTES
+
+-- Usuarios actuales
+UPDATE persona p
+INNER JOIN usuarios u ON u.id_persona = p.id
+SET p.tipo = 'usuario';
+
+-- Las demás quedan como cliente automáticamente
+
+
+-- 🔥 3. CREAR CLIENTE CONTADO
+INSERT INTO persona (nombre, apellido, telefono, correo, direccion, tipo)
+VALUES ('CLIENTE', 'CONTADO', '-', '-', '-', 'cliente');
+
+
+-- 🔥 4. ASEGURAR FACTURA CON CLIENTE
+ALTER TABLE factura 
+ADD COLUMN id_cliente INT;
 
