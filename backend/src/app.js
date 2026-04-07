@@ -6,7 +6,7 @@ import categoriasRoutes from './routes/categorias.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import personasRoutes from './routes/personas.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
-
+import inventarioRoutes from './routes/inventario.routes.js';
 
 const app = express();
 
@@ -19,6 +19,7 @@ app.use('/api', productosRoutes);
 app.use('/api', categoriasRoutes);
 app.use('/api', personasRoutes);
 app.use('/api', usuariosRoutes);
+app.use('/api', inventarioRoutes);
 
 // TEST
 app.get('/', (req, res) => {
