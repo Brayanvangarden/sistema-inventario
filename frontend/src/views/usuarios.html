@@ -1,50 +1,65 @@
-<h2>👤 Gestión de Usuarios</h2>
+<h2 style="text-align:center; color:#4FACFE; margin-bottom:20px;">👤 Gestión de Usuarios</h2>
 
-<button onclick="mostrarFormularioUsuario()">+ Nuevo Usuario</button>
-
-<div id="formularioUsuario" style="display:none; margin-top:20px;">
-    <input type="hidden" id="idUsuario">
-
-    <select id="id_persona">
-        <option value="">Seleccione persona</option>
-    </select>
-
-    <input type="text" id="usuario" placeholder="Usuario">
-    <input type="password" id="contrasena" placeholder="Contraseña">
-    
-    <select id="id_rol">
-        <option value="1">Admin</option>
-        <option value="2">Usuario</option>
-    </select>
-
-    <br><br>
-
-    <button onclick="guardarUsuario()">💾 Guardar</button>
-    <button onclick="cancelarUsuario()">❌ Cancelar</button>
+<div style="text-align:center; margin-bottom:20px;">
+    <button onclick="mostrarFormularioUsuario()" style="padding:10px 20px; background-color:#4FACFE; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">+ Nuevo Usuario</button>
 </div>
 
-<table border="1" style="margin-top:20px;">
-    <thead>
+<!-- Formulario de usuario -->
+<div id="formularioUsuario" style="display:none; margin-top:20px; max-width:500px; margin-left:auto; margin-right:auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+    <input type="hidden" id="idUsuario">
+
+    <div style="margin-bottom:15px;">
+        <select id="id_persona" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+            <option value="">Seleccione persona</option>
+        </select>
+    </div>
+
+    <div style="margin-bottom:15px;">
+        <input type="text" id="usuario" placeholder="Usuario" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+    
+    <div style="margin-bottom:15px;">
+        <input type="password" id="contrasena" placeholder="Contraseña" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+
+    <div style="margin-bottom:15px;">
+        <select id="id_rol" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+            <option value="1">Admin</option>
+            <option value="2">Usuario</option>
+        </select>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:10px;">
+        <button onclick="guardarUsuario()" style="padding:10px 20px; background-color:#4FACFE; color:white; border:none; border-radius:6px; cursor:pointer;">💾 Guardar</button>
+        <button onclick="cancelarUsuario()" style="padding:10px 20px; background-color:#ccc; color:#333; border:none; border-radius:6px; cursor:pointer;">❌ Cancelar</button>
+    </div>
+</div>
+
+<!-- Tabla de usuarios -->
+<table style="width:90%; margin:auto; margin-top:20px; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+    <thead style="background:#f2f2f2;">
         <tr>
-            <th>Persona</th>
-            <th>Usuario</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Acciones</th>
+            <th style="padding:12px;">Persona</th>
+            <th style="padding:12px;">Usuario</th>
+            <th style="padding:12px;">Correo</th>
+            <th style="padding:12px;">Rol</th>
+            <th style="padding:12px;">Acciones</th>
         </tr>
     </thead>
     <tbody id="tablaUsuarios"></tbody>
 </table>
 
-<!-- 🧁 MODAL -->
+<!-- Modal para eliminar usuario -->
 <div id="modalEliminarUsuario" class="modal">
-  <div class="modal-content">
-    <h3>🗑️ Eliminar usuario</h3>
-    <p>¿Seguro que deseas eliminar este usuario?</p>
-
-    <button onclick="confirmarEliminarUsuario()">Eliminar</button>
-    <button onclick="cerrarModalUsuario()">Cancelar</button>
+  <div class="modal-content" style="width: 350px;">
+    <h3 style="margin-bottom:15px;">🗑️ Eliminar usuario</h3>
+    <p style="margin-bottom:20px;">¿Seguro que deseas eliminar este usuario?</p>
+    <div style="display:flex; justify-content:center; gap:15px;">
+        <button onclick="confirmarEliminarUsuario()" class="btn-eliminar">Eliminar</button>
+        <button onclick="cerrarModalUsuario()" class="btn-cancelar">Cancelar</button>
+    </div>
   </div>
 </div>
 
+<!-- Toast para notificaciones -->
 <div id="toastUsuario" class="toast"></div>

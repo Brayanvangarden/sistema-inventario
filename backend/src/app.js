@@ -7,6 +7,8 @@ import authRoutes from './routes/auth.routes.js';
 import personasRoutes from './routes/personas.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
 import inventarioRoutes from './routes/inventario.routes.js';
+import ventasRoutes from './routes/ventas.routes.js';
+
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use('/api', categoriasRoutes);
 app.use('/api', personasRoutes);
 app.use('/api', usuariosRoutes);
 app.use('/api', inventarioRoutes);
+app.use('/api', ventasRoutes);
+
 
 // TEST
 app.get('/', (req, res) => {

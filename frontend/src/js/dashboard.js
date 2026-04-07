@@ -64,6 +64,12 @@ async function cargarVista(vista) {
       }, 50);
     }
 
+    if (vista === "ventas") {
+      setTimeout(() => {
+        buscarProductos(); // 🔥 carga productos al abrir
+      }, 50);
+    }
+
   } catch (error) {
     console.error("Error cargando vista:", error);
     alert("Error cargando vista");
