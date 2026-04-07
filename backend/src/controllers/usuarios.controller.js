@@ -2,14 +2,14 @@ import { pool } from '../config/db.js';
 import bcrypt from 'bcrypt';
 
 
-// 📦 GET PERSONAS
+// 📦 GET usuario
 export const getUsuarios = async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT 
                 u.id,
+                u.id_persona,
                 u.usuario,
-                p.id AS id_persona,
                 CONCAT(p.nombre, ' ', p.apellido) AS persona,
                 p.correo,
                 r.nombre AS rol,
@@ -90,46 +90,31 @@ export const createUsuario = async (req, res) => {
 export const updateUsuario = async (req, res) => {
     try {
         const { id } = req.params;
-        const { usuario, contrasena, id_rol } = req.body;
+        const { id_persona, usuario, contrasena, id_rol } = req.body;
 
-        // 🔍 VALIDACIÓN BÁSICA
-        if (!usuario || !id_rol) {
-            return res.status(400).json({ error: "Usuario y rol son obligatorios" });
+        if (!usuario || !id_rol || !id_persona) {
+            return res.status(400).json({ error: "Persona, usuario y rol son obligatorios" });
         }
 
-        // 🔍 VERIFICAR QUE EXISTE
         const [user] = await pool.query(
             "SELECT * FROM usuarios WHERE id = ? AND activo = 1",
             [id]
         );
 
-        if (user.length === 0) {
-            return res.status(404).json({ error: "Usuario no encontrado" });
-        }
+        if (user.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
 
-        // 🔍 VALIDAR USUARIO DUPLICADO (EXCLUYENDO EL MISMO)
-        const [existe] = await pool.query(
-            "SELECT id FROM usuarios WHERE usuario = ? AND id != ?",
-            [usuario, id]
-        );
-
-        if (existe.length > 0) {
-            return res.status(400).json({ error: "El usuario ya existe" });
-        }
-
-        // 🔐 SI VIENE CONTRASEÑA → ENCRIPTAR
         let hash = user[0].contrasena;
-
         if (contrasena) {
             hash = await bcrypt.hash(contrasena, 10);
         }
 
-        // 🔄 UPDATE
+        // 🔄 EL ORDEN DEBE COINCIDIR EXACTAMENTE CON LOS "?" DEL SET
+        // 1. id_persona, 2. usuario, 3. contrasena (hash), 4. id_rol, 5. id (el WHERE)
         await pool.query(`
             UPDATE usuarios 
-            SET usuario = ?, contrasena = ?, id_rol = ?
+            SET id_persona = ?, usuario = ?, contrasena = ?, id_rol = ?
             WHERE id = ?
-        `, [usuario, hash, id_rol, id]);
+        `, [id_persona, usuario, hash, id_rol, id]); 
 
         res.json({ message: "Usuario actualizado correctamente ✏️" });
 
@@ -138,6 +123,7 @@ export const updateUsuario = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 // 🗑️ ELIMINAR USUARIO (SOFT DELETE)
 export const deleteUsuario = async (req, res) => {

@@ -1,0 +1,48 @@
+<h2>📦 Gestión de Inventario</h2>
+
+<button onclick="mostrarFormularioInventario()">+ Nuevo Inventario</button>
+
+<!-- FORMULARIO -->
+<div id="formularioInventario" style="display:none; margin-top:20px;">
+    <input type="hidden" id="idInventario">
+
+    <select id="producto"></select>
+
+    <input type="number" id="stock" placeholder="Stock">
+    <input type="number" id="stock_minimo" placeholder="Stock mínimo">
+
+    <br><br>
+
+    <button onclick="guardarInventario()">💾 Guardar</button>
+    <button onclick="cancelarInventario()">❌ Cancelar</button>
+</div>
+
+<!-- TABLA -->
+<table border="1" style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Stock</th>
+            <th>Stock mínimo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaInventario"></tbody>
+</table>
+
+<!-- MODAL ELIMINAR -->
+<div id="modalEliminarInventario" class="modal">
+  <div class="modal-content">
+    <h3>🗑️ Eliminar inventario</h3>
+    <p>¿Seguro que deseas eliminar este registro?</p>
+
+    <div class="modal-buttons">
+      <button onclick="confirmarEliminarInventario()">Eliminar</button>
+      <button onclick="cerrarModalInventario()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>

@@ -6,6 +6,7 @@ export const getInventario = async (req, res) => {
         const [rows] = await pool.query(`
             SELECT 
                 i.id,
+                i.id_producto,
                 i.stock,
                 p.nombre as producto,
                 i.stock_minimo

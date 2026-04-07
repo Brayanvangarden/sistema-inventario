@@ -50,10 +50,18 @@ async function cargarVista(vista) {
       }, 50);
     }
     if (vista === "usuarios") {
-    setTimeout(() => {
-        cargarUsuarios();
-        cargarPersonasSelect(); // 🔥 clave
-    }, 50);
+      setTimeout(async () => {
+        await cargarPersonasSelect(); // Cargamos primero el combo
+        await cargarUsuarios();       // Luego la tabla
+      }, 50);
+    }
+
+
+    if (vista === "inventario") {
+      setTimeout(() => {
+        cargarInventario();
+        cargarProductosInventario();
+      }, 50);
     }
 
   } catch (error) {

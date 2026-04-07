@@ -32,21 +32,31 @@ async function cargarUsuarios() {
 /* =========================
    📥 CARGAR PERSONAS SELECT
 ========================= */
-async function cargarPersonasSelect() {
+async function cargarPersonasSelect(id_persona_actual = null) {
     try {
         const res = await fetch('http://localhost:3000/api/personas');
         const data = await res.json();
 
         const select = document.getElementById('id_persona');
-        select.innerHTML = '<option value="">Seleccione persona</option>';
+console.log("Seleccionado:", select.value);
+        let options = '<option value="">Seleccione persona</option>';
 
         data.forEach(p => {
-            select.innerHTML += `
+            options += `
                 <option value="${p.id}">
                     ${p.nombre} ${p.apellido}
                 </option>
             `;
         });
+
+        // 🔥 SOLO UNA VEZ
+        select.innerHTML = options;
+
+        // 🔥 AHORA SÍ FUNCIONA
+        if (id_persona_actual !== null) {
+            select.value = String(id_persona_actual);
+        }
+        console.log("Seleccionado:", select.value);
 
     } catch (error) {
         console.error(error);
@@ -54,16 +64,12 @@ async function cargarPersonasSelect() {
     }
 }
 
-
-
 /* =========================
    ➕ MOSTRAR FORM
 ========================= */
 function mostrarFormularioUsuario() {
     document.getElementById('formularioUsuario').style.display = 'block';
 }
-
-
 
 /* =========================
    ❌ CANCELAR
@@ -136,23 +142,19 @@ async function guardarUsuario() {
     }
 }
 
-
-
 /* =========================
    ✏️ EDITAR
 ========================= */
-function editarUsuario(id, id_persona, usuario, id_rol) {
+async function editarUsuario(id, id_persona, usuario, id_rol) {
     mostrarFormularioUsuario();
 
     document.getElementById('idUsuario').value = id;
-    document.getElementById('id_persona').value = id_persona;
+
+    await cargarPersonasSelect(id_persona); // 🔥 aquí está la clave
+
     document.getElementById('usuario').value = usuario;
     document.getElementById('id_rol').value = id_rol;
-
-    // contraseña no se llena por seguridad
 }
-
-
 
 /* =========================
    🗑️ ELIMINAR (MODAL)
