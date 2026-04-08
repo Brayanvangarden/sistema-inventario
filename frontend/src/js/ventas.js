@@ -1,4 +1,5 @@
 let carrito = [];
+let clienteSeleccionado = null;
 
 // 🔍 BUSCAR PRODUCTOS
 async function buscarProductos() {
@@ -12,7 +13,7 @@ async function buscarProductos() {
   }
 
   try {
-    const res = await fetch(`http://localhost:3000/api/productos?buscar=${encodeURIComponent(textoBuscar)}`);
+    const res = await fetch(`http://localhost:3000/api/inventario?buscar=${encodeURIComponent(textoBuscar)}`);
     if (!res.ok) throw new Error('Error al buscar');
     const data = await res.json();
 
@@ -26,12 +27,12 @@ async function buscarProductos() {
 
     const items = data.map(p => `
       <li
-        onclick="seleccionarProducto(${p.id}, '${p.nombre}', ${p.precio_venta})"
+        onclick="seleccionarProducto(${p.id}, '${p.producto}', ${p.precio_venta})"
         style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #eee;"
         onmouseover="this.style.background='#f0f0f0'"
         onmouseout="this.style.background='white'"
       >
-        <strong>${p.nombre}</strong>
+        <strong>${p.producto}</strong>
         <span style="float: right; color: #555;">₡${parseFloat(p.precio_venta).toFixed(2)}</span>
       </li>
     `).join('');
@@ -43,6 +44,49 @@ async function buscarProductos() {
     mostrarToast('Error al buscar productos', 'error');
   }
 }
+
+async function buscarClientes() {
+  const texto = document.getElementById('busquedaCliente').value.trim();
+  const lista = document.getElementById('sugerenciasCliente');
+
+  if (texto.length < 1) {
+    lista.style.display = 'none';
+    clienteSeleccionado = null;
+    return;
+  }
+
+  const res = await fetch(`http://localhost:3000/api/personas?buscar=${texto}`);
+  const data = await res.json();
+
+  lista.innerHTML = '';
+
+  data.forEach(p => {
+    const li = document.createElement('li');
+
+    li.innerHTML = `${p.nombre} ${p.apellido}`;
+
+    li.style.padding = "8px";
+    li.style.cursor = "pointer";
+
+    li.addEventListener('click', () => {
+      seleccionarCliente(p);
+    });
+
+    lista.appendChild(li);
+  });
+
+  lista.style.display = 'block';
+}
+
+function seleccionarCliente(p) {
+  clienteSeleccionado = p;
+
+  document.getElementById('busquedaCliente').value =
+    `${p.nombre} ${p.apellido}`;
+
+  document.getElementById('sugerenciasCliente').style.display = 'none';
+}
+
 
 // ✅ SELECCIONAR PRODUCTO DESDE EL DROPDOWN
 function seleccionarProducto(id, nombre, precio) {
@@ -124,7 +168,7 @@ async function realizarVenta() {
   }
 
   const body = {
-    id_persona: document.getElementById('cliente').value || null,
+    id_persona: clienteSeleccionado ? clienteSeleccionado.id : null,
     id_usuario: 1,
     id_metodo_pago: 1,
     productos: carrito.map(p => ({ id_producto: p.id, cantidad: p.cantidad }))

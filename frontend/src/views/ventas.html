@@ -1,15 +1,35 @@
 <h2 style="text-align:center; color:#4CAF50;">💰 Punto de Venta</h2>
 
 <!-- CLIENTE -->
-<div style="margin-bottom:20px; text-align:center;">
-  <label for="cliente" style="font-weight:bold; margin-right:10px;">Cliente:</label>
-  <select id="cliente" style="padding:8px; border-radius:4px; border:1px solid #ccc;">
-      <option value="">Cliente contado</option>
-  </select>
+<div style="margin-bottom:20px; text-align:center; position: relative;">
+  <label style="font-weight:bold;">Cliente:</label>
+
+  <input 
+    type="text" 
+    id="busquedaCliente" 
+    placeholder="Cliente contado"
+    style="padding:8px; width:250px;"
+    onkeyup="buscarClientes()"
+  >
+
+  <ul id="sugerenciasCliente" style="
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width:250px;
+    background:white;
+    border:1px solid #ccc;
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:none;
+    z-index:1000;
+  "></ul>
 </div>
 
 <!-- PRODUCTOS -->
 <div style="margin-bottom:20px; display:flex; justify-content:center; align-items:center;">
+    <label style="font-weight:bold;">Producto:</label>
   <div style="position: relative; width: 300px;">
     <input
       type="text"
