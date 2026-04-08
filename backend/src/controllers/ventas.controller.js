@@ -6,13 +6,11 @@ export const crearVenta = async (req, res) => {
 
     try {
         const { id_persona, id_usuario, id_metodo_pago, productos } = req.body;
-
-        /*
-        productos = [
-            { id_producto: 1, cantidad: 2 },
-            { id_producto: 3, cantidad: 1 }
-        ]
-        */
+        console.log('Datos recibidos:', req.body);
+        console.log('id_persona:', id_persona);
+        console.log('id_usuario:', id_usuario);
+        console.log('id_metodo_pago:', id_metodo_pago);
+        console.log('productos:', productos);
 
         if (!id_usuario || !productos || productos.length === 0) {
             return res.status(400).json({ error: "Datos incompletos" });
@@ -24,6 +22,7 @@ export const crearVenta = async (req, res) => {
 
         // 🧾 1. CALCULAR TOTAL + VALIDAR STOCK
         for (const item of productos) {
+            console.log('Procesando producto:', item);
             const [productoDB] = await connection.query(
                 `SELECT p.precio_venta, i.stock 
                  FROM productos p
@@ -31,6 +30,7 @@ export const crearVenta = async (req, res) => {
                  WHERE p.id = ?`,
                 [item.id_producto]
             );
+            console.log('Datos del producto en DB:', productoDB);
 
             if (productoDB.length === 0) {
                 throw new Error(`Producto no existe ID ${item.id_producto}`);
@@ -44,6 +44,8 @@ export const crearVenta = async (req, res) => {
 
             total += precio_venta * item.cantidad;
         }
+
+        console.log('Total calculado:', total);
 
         // 🧾 2. CREAR FACTURA
         const [factura] = await connection.query(`

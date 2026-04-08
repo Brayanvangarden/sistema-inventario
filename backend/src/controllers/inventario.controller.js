@@ -2,26 +2,45 @@ import { pool } from '../config/db.js';
 
 // 📦 GET Inventario 
 export const getInventario = async (req, res) => {
-    try {
-        const [rows] = await pool.query(`
-            SELECT 
-                i.id,
-                i.id_producto,
-                i.stock,
-                p.nombre as producto,
-                i.stock_minimo
-            FROM inventario i
-            INNER JOIN productos p ON i.id_producto = p.id
-            WHERE i.activo = 1
-            ORDER BY i.id DESC
-        `);
+  const { termino, disponible } = req.query; // obtener parámetros de consulta
 
-        res.json(rows);
+  // Iniciar la consulta base
+  let query = `
+    SELECT 
+      i.id,
+      i.id_producto,
+      i.stock,
+      p.nombre as producto,
+      p.precio_venta,
+      i.stock_minimo
+    FROM inventario i
+    INNER JOIN productos p ON i.id_producto = p.id
+    WHERE i.activo = 1
+  `;
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
+  const params = [];
+
+  // Agregar filtro por término si existe
+  if (termino) {
+    query += ' AND p.nombre LIKE ?';
+    params.push(`%${termino}%`);
+  }
+
+  // Agregar filtro por disponibilidad si se solicita
+  if (disponible === 'true') {
+    query += ' AND i.stock > 0';
+  }
+
+  // Ordenar
+  query += ' ORDER BY i.id DESC';
+
+  try {
+    const [rows] = await pool.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // ➕ CREAR INVENTARIO

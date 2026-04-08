@@ -3,7 +3,9 @@ import { pool } from '../config/db.js';
 // 📦 GET PERSONAS
 export const getPersonas = async (req, res) => {
     try {
-        const [rows] = await pool.query(`
+        const { buscar } = req.query;
+
+        let query = `
             SELECT 
                 p.id,
                 p.nombre,
@@ -14,8 +16,28 @@ export const getPersonas = async (req, res) => {
                 p.cedula
             FROM persona p
             WHERE p.activo = 1
-            ORDER BY p.id DESC
-        `);
+        `;
+
+        const params = [];
+
+        // 🔍 FILTRO
+        if (buscar && buscar.trim() !== '') {
+            query += `
+                AND (
+                    LOWER(p.nombre) LIKE ? OR
+                    LOWER(p.apellido) LIKE ? OR
+                    LOWER(p.cedula) LIKE ?
+                )
+            `;
+
+            const filtro = `%${buscar.toLowerCase()}%`;
+            console.log('Buscar:', buscar);
+            params.push(filtro, filtro, filtro);
+        }
+
+        query += ` ORDER BY p.nombre ASC LIMIT 10`;
+
+        const [rows] = await pool.query(query, params);
 
         res.json(rows);
 
