@@ -241,7 +241,6 @@ function mostrarMetodoPago() {
   document.getElementById('metodosPago').style.display = 'block';
 }
 //
-
 async function seleccionarMetodo(idMetodo) {
   // Ocultar el selector
   document.getElementById('metodosPago').style.display = 'none';
