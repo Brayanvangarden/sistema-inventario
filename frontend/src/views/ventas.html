@@ -3,7 +3,6 @@
 <!-- CLIENTE -->
 <div style="margin-bottom:20px; text-align:center; position: relative;">
   <label style="font-weight:bold;">Cliente:</label>
-
   <input 
     type="text" 
     id="busquedaCliente" 
@@ -11,7 +10,6 @@
     style="padding:8px; width:250px;"
     onkeyup="buscarClientes()"
   >
-
   <ul id="sugerenciasCliente" style="
     position:absolute;
     left:50%;
@@ -29,7 +27,7 @@
 
 <!-- PRODUCTOS -->
 <div style="margin-bottom:20px; display:flex; justify-content:center; align-items:center;">
-    <label style="font-weight:bold;">Producto:</label>
+  <label style="font-weight:bold;">Producto:</label>
   <div style="position: relative; width: 300px;">
     <input
       type="text"
@@ -39,7 +37,6 @@
       autocomplete="off"
       style="width:100%; padding:8px 12px; box-sizing:border-box; border:1px solid #ccc; border-radius:4px;"
     />
-    <!-- ✅ Este es el que faltaba -->
     <ul id="sugerencias" style="
       display: none;
       position: absolute;
@@ -60,30 +57,51 @@
   </div>
 </div>
 
-
-
 <hr style="margin:40px 0; border:none; border-top:2px solid #eee;">
 
 <!-- CARRITO -->
 <h3 style="text-align:center; margin-bottom:20px;">🛒 Carrito</h3>
 
 <table border="1" style="width:80%; margin:auto; border-collapse:collapse; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <thead style="background-color:#f2f2f2;">
-        <tr>
-            <th style="padding:10px;">Producto</th>
-            <th style="padding:10px;">Cantidad</th>
-            <th style="padding:10px;">Precio</th>
-            <th style="padding:10px;">Subtotal</th>
-            <th style="padding:10px;">Eliminar</th>
-        </tr>
-    </thead>
-    <tbody id="carrito"></tbody>
+  <thead style="background-color:#f2f2f2;">
+    <tr>
+      <th style="padding:10px;">Producto</th>
+      <th style="padding:10px;">Cantidad</th>
+      <th style="padding:10px;">Precio</th>
+      <th style="padding:10px;">Subtotal</th>
+      <th style="padding:10px;">Eliminar</th>
+    </tr>
+  </thead>
+  <tbody id="carrito"></tbody>
 </table>
 
 <h3 style="text-align:center; margin-top:20px;">Total: ₡ <span id="total">0</span></h3>
 
 <div style="text-align:center; margin-top:20px;">
-  <button onclick="realizarVenta()" style="padding:10px 20px; background-color:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">💰 Vender</button>
+  <button onclick="procesarVenta()" style="padding:10px 20px; background-color:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer; font-size:16px;">💰 Vender</button>
+</div>
+
+<!-- Pantalla de selección de método de pago, inicialmente oculta -->
+<div id="metodosPago" style="
+  display:none; 
+  position:fixed; 
+  top:20%; 
+  left:50%; 
+  transform:translateX(-50%);
+  background:#fff; 
+  padding:20px; 
+  border:1px solid #ccc; 
+  border-radius:8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 10000;
+">
+  <h3 style="text-align:center;">Selecciona método de pago</h3>
+  <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+    <button onclick="seleccionarMetodo(1)" style="padding:10px; border:none; border-radius:4px; background:#2196F3; color:#fff; cursor:pointer;">Efectivo</button>
+    <button onclick="seleccionarMetodo(2)" style="padding:10px; border:none; border-radius:4px; background:#4CAF50; color:#fff; cursor:pointer;">Sinpe</button>
+    <button onclick="seleccionarMetodo(3)" style="padding:10px; border:none; border-radius:4px; background:#FFC107; color:#fff; cursor:pointer;">Transferencia</button>
+    <button onclick="seleccionarMetodo(4)" style="padding:10px; border:none; border-radius:4px; background:#FF5722; color:#fff; cursor:pointer;">Tarjeta</button>
+  </div>
 </div>
 
 <!-- Toast para notificaciones -->
@@ -102,3 +120,28 @@
   bottom: 30px;
   font-size: 17px;
 "></div>
+
+<!-- Ticket o recibo -->
+<div id="ticket" style="
+  display:none; 
+  position:fixed; 
+  top:10%; 
+  left:50%; 
+  transform:translateX(-50%);
+  background:#fff; 
+  padding:20px; 
+  border:1px solid #ccc; 
+  border-radius:8px; 
+  max-width:600px; 
+  width:90%; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  overflow:auto;
+  z-index: 20000;
+">
+  <h2 style="text-align:center;">Ticket de compra</h2>
+  <div id="detalleTicket"></div>
+  <div style="margin-top:20px; text-align:center;">
+    <button onclick="imprimirTicket()" style="margin-right:10px;">Imprimir</button>
+    <button onclick="cerrarTicket()">Cerrar</button>
+  </div>
+</div>

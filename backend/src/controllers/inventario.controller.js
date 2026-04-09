@@ -175,3 +175,38 @@ export const deleteInventario = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const verificarStock = async (req, res) => {
+  const { productos } = req.body; // productos es un array con { id, cantidad }
+
+  if (!productos || !Array.isArray(productos)) {
+    return res.status(400).json({ error: 'Datos inválidos' });
+  }
+
+  try {
+    // Obtener todos los productos en inventario que coincidan con los IDs
+    const ids = productos.map(p => p.id);
+    const [inventarioItems] = await pool.query(
+      'SELECT id, id_producto, stock, p.nombre FROM inventario i INNER JOIN productos p ON i.id_producto = p.id WHERE i.id IN (?) AND i.activo = 1',
+      [ids]
+    );
+
+    // Verificar cuáles productos no tienen stock suficiente
+    const noStock = productos.filter(p => {
+      const item = inventarioItems.find(i => i.id_producto === p.id);
+      return !item || item.stock < p.cantidad;
+    }).map(p => {
+      const item = inventarioItems.find(i => i.id_producto === p.id);
+      return {
+        id: p.id,
+        nombre: item ? item.nombre : 'Producto desconocido'
+      };
+    });
+
+    res.json({ noStock });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { crearVenta, getVentas, getVentaDetalle } from '../controllers/ventas.controller.js';
+import { getVentas, getVentaDetalle, crearFactura, pagarFactura } from '../controllers/ventas.controller.js';
 
 const router = Router();
 
 // 💰 CREAR
-router.post('/ventas', crearVenta);
+router.post('/ventas', crearFactura );
+
+router.put('/ventas/pagar/:id',pagarFactura)
 
 // 📦 LISTAR
 router.get('/ventas', getVentas);
