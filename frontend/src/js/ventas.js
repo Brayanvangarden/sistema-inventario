@@ -330,6 +330,11 @@ function imprimirTicket() {
   ventanaImpresion.print();
 }
 
+function cerrarMetodoPago() {
+  const divMetodoPago = document.getElementById('metodosPago');
+  divMetodoPago.style.display = 'none';
+}
+
 window.seleccionarProducto = seleccionarProducto;
 window.agregarCarrito = agregarCarrito;
 window.cambiarCantidad = cambiarCantidad;
