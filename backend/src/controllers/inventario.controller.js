@@ -2,10 +2,10 @@ import { pool } from '../config/db.js';
 
 // 📦 GET Inventario 
 export const getInventario = async (req, res) => {
-  const { termino, disponible } = req.query; // obtener parámetros de consulta
+    const { termino, disponible } = req.query; // obtener parámetros de consulta
 
-  // Iniciar la consulta base
-  let query = `
+    // Iniciar la consulta base
+    let query = `
     SELECT 
       i.id,
       i.id_producto,
@@ -18,29 +18,29 @@ export const getInventario = async (req, res) => {
     WHERE i.activo = 1
   `;
 
-  const params = [];
+    const params = [];
 
-  // Agregar filtro por término si existe
-  if (termino) {
-    query += ' AND p.nombre LIKE ?';
-    params.push(`%${termino}%`);
-  }
+    // Agregar filtro por término si existe
+    if (termino) {
+        query += ' AND p.nombre LIKE ?';
+        params.push(`%${termino}%`);
+    }
 
-  // Agregar filtro por disponibilidad si se solicita
-  if (disponible === 'true') {
-    query += ' AND i.stock > 0';
-  }
+    // Agregar filtro por disponibilidad si se solicita
+    if (disponible === 'true') {
+        query += ' AND i.stock > 0';
+    }
 
-  // Ordenar
-  query += ' ORDER BY i.id DESC';
+    // Ordenar
+    query += ' ORDER BY i.id DESC';
 
-  try {
-    const [rows] = await pool.query(query, params);
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
+    try {
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
 
 // ➕ CREAR INVENTARIO
@@ -176,37 +176,60 @@ export const deleteInventario = async (req, res) => {
     }
 };
 
+// Verificar stock
+
 export const verificarStock = async (req, res) => {
-  const { productos } = req.body; // productos es un array con { id, cantidad }
+    const { productos } = req.body;
 
-  if (!productos || !Array.isArray(productos)) {
-    return res.status(400).json({ error: 'Datos inválidos' });
-  }
+    if (!productos || !Array.isArray(productos)) {
+        return res.status(400).json({ error: 'Datos inválidos' });
+    }
 
-  try {
-    // Obtener todos los productos en inventario que coincidan con los IDs
-    const ids = productos.map(p => p.id);
-    const [inventarioItems] = await pool.query(
-      'SELECT id, id_producto, stock, p.nombre FROM inventario i INNER JOIN productos p ON i.id_producto = p.id WHERE i.id IN (?) AND i.activo = 1',
-      [ids]
-    );
+    try {
+        const ids = productos.map(p => p.id);
 
-    // Verificar cuáles productos no tienen stock suficiente
-    const noStock = productos.filter(p => {
-      const item = inventarioItems.find(i => i.id_producto === p.id);
-      return !item || item.stock < p.cantidad;
-    }).map(p => {
-      const item = inventarioItems.find(i => i.id_producto === p.id);
-      return {
-        id: p.id,
-        nombre: item ? item.nombre : 'Producto desconocido'
-      };
-    });
+        if (ids.length === 0) {
+            return res.json({ noStock: [] });
+        }
 
-    res.json({ noStock });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
+        const placeholders = ids.map(() => '?').join(',');
+
+        const query = `
+            SELECT i.id_producto, i.stock, p.nombre
+            FROM inventario i
+            INNER JOIN productos p ON i.id_producto = p.id
+            WHERE i.id_producto IN (${placeholders})
+            AND i.activo = 1
+        `;
+
+        const [rows] = await pool.query(query, ids);
+
+        // 🔥 Crear mapa rápido
+        const inventarioMap = new Map();
+        rows.forEach(item => {
+            inventarioMap.set(item.id_producto, item);
+        });
+
+        // 🔍 Verificar stock
+        const noStock = productos
+            .filter(p => {
+                const item = inventarioMap.get(p.id);
+                return !item || item.stock < p.cantidad;
+            })
+            .map(p => {
+                const item = inventarioMap.get(p.id);
+                return {
+                    id: p.id,
+                    nombre: item ? item.nombre : 'Producto no encontrado',
+                    stockDisponible: item ? item.stock : 0,
+                    solicitado: p.cantidad
+                };
+            });
+
+        res.json({ noStock });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
 };
-
