@@ -1,16 +1,11 @@
 import { pool } from '../config/db.js';
 
-// 💰 CREAR VENTA COMPLETA
-export const crearVenta = async (req, res) => {
+// 🧾 CREAR FACTURA (PENDIENTE)
+export const crearFactura = async (req, res) => {
     const connection = await pool.getConnection();
 
     try {
-        const { id_persona, id_usuario, id_metodo_pago, productos } = req.body;
-        console.log('Datos recibidos:', req.body);
-        console.log('id_persona:', id_persona);
-        console.log('id_usuario:', id_usuario);
-        console.log('id_metodo_pago:', id_metodo_pago);
-        console.log('productos:', productos);
+        const { id_persona, id_usuario, productos } = req.body;
 
         if (!id_usuario || !productos || productos.length === 0) {
             return res.status(400).json({ error: "Datos incompletos" });
@@ -20,42 +15,33 @@ export const crearVenta = async (req, res) => {
 
         let total = 0;
 
-        // 🧾 1. CALCULAR TOTAL + VALIDAR STOCK
+        // 🧾 1. CALCULAR TOTAL (SIN VALIDAR STOCK)
         for (const item of productos) {
-            console.log('Procesando producto:', item);
+
             const [productoDB] = await connection.query(
-                `SELECT p.precio_venta, i.stock 
-                 FROM productos p
-                 INNER JOIN inventario i ON p.id = i.id_producto
-                 WHERE p.id = ?`,
+                `SELECT precio_venta 
+                 FROM productos 
+                 WHERE id = ?`,
                 [item.id_producto]
             );
-            console.log('Datos del producto en DB:', productoDB);
 
             if (productoDB.length === 0) {
                 throw new Error(`Producto no existe ID ${item.id_producto}`);
             }
 
-            const { precio_venta, stock } = productoDB[0];
-
-            if (stock < item.cantidad) {
-                throw new Error(`Stock insuficiente para producto ID ${item.id_producto}`);
-            }
-
-            total += precio_venta * item.cantidad;
+            const precio = productoDB[0].precio_venta;
+            total += precio * item.cantidad;
         }
 
-        console.log('Total calculado:', total);
-
-        // 🧾 2. CREAR FACTURA
+        // 🧾 2. CREAR FACTURA (PENDIENTE)
         const [factura] = await connection.query(`
-            INSERT INTO factura (id_persona, id_usuario, total, estado, id_metodo_pago)
-            VALUES (?, ?, ?, 'PAGADA', ?)
-        `, [id_persona || null, id_usuario, total, id_metodo_pago || null]);
+            INSERT INTO factura (id_persona, id_usuario, total, estado)
+            VALUES (?, ?, ?, 'PENDIENTE')
+        `, [id_persona || null, id_usuario, total]);
 
         const id_factura = factura.insertId;
 
-        // 🧾 3. INSERTAR DETALLE + ACTUALIZAR INVENTARIO
+        // 🧾 3. INSERTAR DETALLE (SIN TOCAR INVENTARIO)
         for (const item of productos) {
 
             const [productoDB] = await connection.query(
@@ -68,30 +54,16 @@ export const crearVenta = async (req, res) => {
             const precio = productoDB[0].precio_venta;
             const subtotal = precio * item.cantidad;
 
-            // 📦 detalle
             await connection.query(`
                 INSERT INTO factura_detalle (id_factura, id_producto, cantidad, precio, subtotal)
                 VALUES (?, ?, ?, ?, ?)
             `, [id_factura, item.id_producto, item.cantidad, precio, subtotal]);
-
-            // 📉 descontar inventario
-            await connection.query(`
-                UPDATE inventario 
-                SET stock = stock - ?
-                WHERE id_producto = ?
-            `, [item.cantidad, item.id_producto]);
-
-            // 📊 registrar movimiento
-            await connection.query(`
-                INSERT INTO movimientos (id_producto, tipo, cantidad, descripcion)
-                VALUES (?, 'SALIDA', ?, 'Venta')
-            `, [item.id_producto, item.cantidad]);
         }
 
         await connection.commit();
 
         res.json({
-            message: "Venta realizada correctamente 💰",
+            message: "Factura creada (pendiente de pago) 🧾",
             id_factura
         });
 
@@ -174,5 +146,85 @@ export const getVentaDetalle = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const pagarFactura = async (req, res) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const { id } = req.params;
+        const { id_metodo_pago } = req.body;
+
+        if (!id_metodo_pago) {
+            return res.status(400).json({ error: "Debe indicar método de pago" });
+        }
+
+        await connection.beginTransaction();
+
+        // 🔍 1. Verificar factura
+        const [factura] = await connection.query(
+            "SELECT * FROM factura WHERE id = ? AND estado = 'PENDIENTE'",
+            [id]
+        );
+
+        if (factura.length === 0) {
+            await connection.rollback();
+            return res.status(404).json({ error: "Factura no encontrada o ya pagada" });
+        }
+
+        // 🔍 2. Obtener detalle
+        const [detalle] = await connection.query(`
+            SELECT fd.*, i.stock
+            FROM factura_detalle fd
+            JOIN inventario i ON fd.id_producto = i.id_producto
+            WHERE fd.id_factura = ?
+        `, [id]);
+
+        // 🔥 3. VALIDAR STOCK
+        for (const item of detalle) {
+            if (item.stock < item.cantidad) {
+                await connection.rollback();
+                return res.status(400).json({
+                    error: `Stock insuficiente para producto ID ${item.id_producto}`
+                });
+            }
+        }
+
+        // 📉 4. DESCONTAR INVENTARIO + MOVIMIENTOS
+        for (const item of detalle) {
+            // Descontar stock
+            await connection.query(`
+                UPDATE inventario
+                SET stock = stock - ?
+                WHERE id_producto = ?
+            `, [item.cantidad, item.id_producto]);
+
+            // Insertar movimiento
+            await connection.query(`
+                INSERT INTO movimientos (id_producto, tipo, cantidad, descripcion)
+                VALUES (?, 'SALIDA', ?, 'Venta realizada')
+            `, [item.id_producto, item.cantidad]);
+        }
+
+        // 💰 5. ACTUALIZAR FACTURA
+        await connection.query(`
+            UPDATE factura
+            SET estado = 'PAGADA',
+                id_metodo_pago = ?
+            WHERE id = ?
+        `, [id_metodo_pago, id]);
+
+        await connection.commit();
+
+        res.json({ message: "Factura pagada correctamente 💰" });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error(error);
+        res.status(500).json({ error: error.message });
+
+    } finally {
+        connection.release();
     }
 };

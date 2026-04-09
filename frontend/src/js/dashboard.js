@@ -66,7 +66,7 @@ async function cargarVista(vista) {
 
     if (vista === "ventas") {
       setTimeout(() => {
-        buscarProductos(); // 🔥 carga productos al abrir
+        buscarProductos();
       }, 50);
     }
 
