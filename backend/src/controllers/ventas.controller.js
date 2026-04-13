@@ -1,6 +1,7 @@
 import { pool } from '../config/db.js';
 import nodemailer from 'nodemailer';
 
+
 // 🧾 CREAR FACTURA (PENDIENTE)
 export const crearFactura = async (req, res) => {
     const connection = await pool.getConnection();
@@ -79,27 +80,51 @@ export const crearFactura = async (req, res) => {
 
 // 📦 GET VENTAS
 export const getVentas = async (req, res) => {
-    try {
-        const [rows] = await pool.query(`
-            SELECT 
-                f.id,
-                f.fecha,
-                f.total,
-                f.estado,
-                CONCAT(p.nombre, ' ', p.apellido) AS cliente,
-                u.usuario
-            FROM factura f
-            LEFT JOIN persona p ON f.id_persona = p.id
-            INNER JOIN usuarios u ON f.id_usuario = u.id
-            ORDER BY f.id DESC
-        `);
+  try {
+    const pagina = parseInt(req.query.page)  || 1;
+    const limite = parseInt(req.query.limit) || 10;
+    const offset = (pagina - 1) * limite;
 
-        res.json(rows);
+    const { cliente, fecha, estado } = req.query;
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+    let query = `
+      SELECT 
+        f.id, f.fecha, f.total, f.estado,
+        CONCAT(p.nombre, ' ', p.apellido) AS cliente,
+        u.usuario
+      FROM factura f
+      LEFT JOIN persona p ON f.id_persona = p.id
+      INNER JOIN usuarios u ON f.id_usuario = u.id
+      WHERE 1=1
+    `;
+
+    const params = [];
+
+    if (cliente && cliente.trim() !== "") {
+      query += ` AND LOWER(CONCAT(p.nombre, ' ', p.apellido)) LIKE ?`;
+      params.push(`%${cliente.toLowerCase()}%`);
     }
+
+    if (fecha && fecha.trim() !== "") {
+      query += ` AND DATE(f.fecha) = ?`;
+      params.push(fecha);
+    }
+
+    if (estado && estado.trim() !== "") {
+      query += ` AND f.estado = ?`;
+      params.push(estado);
+    }
+
+    query += ` ORDER BY f.id DESC LIMIT ? OFFSET ?`;
+    params.push(limite, offset);
+
+    const [rows] = await pool.query(query, params);
+    res.json(rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // 📄 GET DETALLE DE VENTA

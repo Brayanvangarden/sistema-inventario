@@ -1,45 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Dashboard</title>
-<link rel="stylesheet" href="../styles/styles.css" />
+  <meta charset="UTF-8" />
+  <title>Dashboard — Style</title>
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="../styles/dashboard.css" />
 </head>
 <body>
 
-<!-- Sidebar con elementos semánticos -->
 <nav class="sidebar" role="navigation" aria-label="Menú principal">
-    <h2 class="logo">💄 Suplidora y Academia Style</h2>
 
-    <div class="user-info" id="userInfo"></div>
+  <div class="sidebar-logo">
+    <span class="sidebar-logo-icon">💄</span>
+    <p class="sidebar-logo-texto">Suplidora y Academia Style</p>
+  </div>
 
-    <ul class="menu-list">
-        <li class="menu-item" onclick="cargarVista('productos')">📦 Productos</li>
-        <li class="menu-item" onclick="cargarVista('personas')">👥 Personas</li>
-        <li class="menu-item" onclick="cargarVista('usuarios')">👥 Usuarios</li>
-        <li class="menu-item" onclick="cargarVista('ventas')">🧾 Ventas</li>
-        <li class="menu-item" onclick="cargarVista('facturas')">🧾 Facturas</li>
-        <li class="menu-item" onclick="cargarVista('inventario')">🏪 Inventario</li>
-        <li class="menu-item">🏪 Tienda</li>
-        <li class="menu-item logout" onclick="logout()">🚪 Cerrar sesión</li>
-    </ul>
+  <div class="sidebar-user" id="userInfo"></div>
+
+  <ul class="menu-list">
+    <li class="menu-item" onclick="cargarVista('productos')">
+      <span class="menu-icon">📦</span> Productos
+    </li>
+    <li class="menu-item" onclick="cargarVista('personas')">
+      <span class="menu-icon">👥</span> Personas
+    </li>
+    <li class="menu-item" onclick="cargarVista('usuarios')">
+      <span class="menu-icon">🔑</span> Usuarios
+    </li>
+    <li class="menu-item" onclick="cargarVista('ventas')">
+      <span class="menu-icon">🧾</span> Ventas
+    </li>
+    <li class="menu-item" onclick="cargarVista('facturas')">
+      <span class="menu-icon">📄</span> Facturas
+    </li>
+    <li class="menu-item" onclick="cargarVista('inventario')">
+      <span class="menu-icon">🏪</span> Inventario
+    </li>
+    <li class="menu-item" onclick="cargarVista('tiendas')">
+      <span class="menu-icon">🛍️</span> Tienda
+    </li>
+    <li class="menu-item logout" onclick="logout()">
+      <span class="menu-icon">🚪</span> Cerrar sesión
+    </li>
+  </ul>
 </nav>
 
-<!-- Contenido dinámico -->
 <main class="content" id="contenido">
-    <h2>Bienvenido al sistema</h2>
+  <div class="bienvenida">
+    <h2>Bienvenida al sistema ✨</h2>
+    <p>Seleccioná una opción del menú para comenzar.</p>
+  </div>
 </main>
 
-<!-- Scripts al final, con defer si quieres -->
 <script src="../js/inventario.js" defer></script>
 <script src="../js/productos.js" defer></script>
 <script src="../js/dashboard.js" defer></script>
 <script src="../js/personas.js" defer></script>
 <script src="../js/usuarios.js" defer></script>
 <script src="../js/facturas.js" defer></script>
- 
- <script src="../js/ventas.js" defer></script> 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="../js/ventas.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>

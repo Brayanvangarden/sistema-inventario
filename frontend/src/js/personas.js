@@ -1,11 +1,20 @@
-// 🔄 CARGAR PERSONAS
+let paginaActualPersonas = 1;
+const limitePersonas = 10;
+
 async function cargarPersonas() {
+  paginaActualPersonas = 1;
+  await fetchPersonas();
+}
+
+async function fetchPersonas() {
   try {
     const termino = encodeURIComponent(
       document.getElementById("filtroPersona")?.value.trim() || ""
     );
 
-    const res = await fetch(`http://localhost:3000/api/personas?buscar=${termino}`);
+    const url = `http://localhost:3000/api/personas?buscar=${termino}&page=${paginaActualPersonas}&limit=${limitePersonas}`;
+
+    const res  = await fetch(url);
     const data = await res.json();
 
     const tabla = document.getElementById("tablaPersonas");
@@ -13,6 +22,7 @@ async function cargarPersonas() {
 
     if (data.length === 0) {
       tabla.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#999; padding:20px;">No se encontraron personas</td></tr>`;
+      actualizarInfoPersonas();
       return;
     }
 
@@ -32,10 +42,29 @@ async function cargarPersonas() {
         </tr>
       `;
     });
+
+    actualizarInfoPersonas();
+
   } catch (error) {
     console.error(error);
     mostrarToast("Error cargando personas", "error");
   }
+}
+
+function siguientePersonas() {
+  paginaActualPersonas++;
+  fetchPersonas();
+}
+
+function anteriorPersonas() {
+  if (paginaActualPersonas > 1) {
+    paginaActualPersonas--;
+    fetchPersonas();
+  }
+}
+
+function actualizarInfoPersonas() {
+  document.getElementById("paginaInfoPersonas").innerText = `Página ${paginaActualPersonas}`;
 }
 
 // ➕ MOSTRAR FORM
