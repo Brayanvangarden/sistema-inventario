@@ -425,7 +425,6 @@ async function ejecutarPago(idMetodo) {
     mostrarToast("Error en la venta", "error");
   }
 }
-
 // ============================================================
 // TICKET
 // ============================================================
