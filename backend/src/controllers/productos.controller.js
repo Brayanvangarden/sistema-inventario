@@ -3,46 +3,61 @@ import { pool } from '../config/db.js';
 
 // 📦 GET PRODUCTOS (Ahora mostrará TODO, tenga o no inventario)
 export const getProductos = async (req, res) => {
-    try {
-        // Parámetros de paginación
-        const pagina = parseInt(req.query.page) || 1;
-        const limite = parseInt(req.query.limit) || 15;
-        const offset = (pagina - 1) * limite;
+  try {
+    // 📌 Parámetros
+    const pagina = parseInt(req.query.page) || 1;
+    const limite = parseInt(req.query.limit) || 15;
+    const offset = (pagina - 1) * limite;
 
-        // Parámetro de búsqueda
-        const { buscar } = req.query;
+    // 🔎 NUEVOS FILTROS
+    const { nombre, codigo, categoria } = req.query;
 
-        // Construcción dinámica de la consulta
-        let query = `
-            SELECT 
-                p.id,
-                p.nombre,
-                p.codigo,
-                p.id_categoria,
-                c.nombre AS categoria,
-                p.precio_compra,
-                p.precio_venta
-            FROM productos p
-            INNER JOIN categorias c ON p.id_categoria = c.id
-            WHERE p.activo = 1
-        `;
+    let query = `
+      SELECT 
+        p.id,
+        p.nombre,
+        p.codigo,
+        p.id_categoria,
+        c.nombre AS categoria,
+        p.precio_compra,
+        p.precio_venta
+      FROM productos p
+      INNER JOIN categorias c ON p.id_categoria = c.id
+      WHERE p.activo = 1
+    `;
 
-        const params = [];
+    const params = [];
 
-        if (buscar && buscar.trim() !== '') {
-            query += ` AND LOWER(p.nombre) LIKE ?`;
-            params.push(`%${buscar.toLowerCase()}%`);
-        }
-
-        query += ` ORDER BY p.id DESC LIMIT ? OFFSET ?`;
-        params.push(limite, offset);
-
-        const [rows] = await pool.query(query, params);
-
-        res.json(rows);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    // 🔎 FILTRO POR NOMBRE
+    if (nombre && nombre.trim() !== "") {
+      query += ` AND LOWER(p.nombre) LIKE ?`;
+      params.push(`%${nombre.toLowerCase()}%`);
     }
+
+    // 🔎 FILTRO POR CÓDIGO
+    if (codigo && codigo.trim() !== "") {
+      query += ` AND LOWER(p.codigo) LIKE ?`;
+      params.push(`%${codigo.toLowerCase()}%`);
+    }
+
+    // 🔎 FILTRO POR CATEGORÍA
+    if (categoria && categoria !== "") {
+      query += ` AND p.id_categoria = ?`;
+      params.push(categoria);
+    }
+
+    // 📊 ORDEN + PAGINACIÓN
+    query += ` ORDER BY p.id DESC LIMIT ? OFFSET ?`;
+    params.push(limite, offset);
+
+    const [rows] = await pool.query(query, params);
+
+    res.json(rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // ➕ CREAR PRODUCTO

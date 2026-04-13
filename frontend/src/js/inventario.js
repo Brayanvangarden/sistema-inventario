@@ -1,42 +1,49 @@
 // 🔄 CARGAR INVENTARIO
 async function cargarInventario() {
-    try {
-        const res = await fetch('http://localhost:3000/api/inventario');
-        const data = await res.json();
+  try {
+    const termino = encodeURIComponent(
+      document.getElementById("filtroInventario")?.value.trim() || ""
+    );
 
-        const tabla = document.getElementById('tablaInventario');
-        tabla.innerHTML = '';
+    const res = await fetch(`http://localhost:3000/api/inventario?termino=${termino}`);
+    const data = await res.json();
 
-        data.forEach(i => {
+    const tabla = document.getElementById('tablaInventario');
+    tabla.innerHTML = '';
 
-            // 🔥 ESTADO DEL STOCK
-            let estado = '';
-            if (i.stock <= i.stock_minimo) {
-                estado = '🔴 Bajo';
-            } else if (i.stock <= i.stock_minimo * 2) {
-                estado = '🟡 Medio';
-            } else {
-                estado = '🟢 Alto';
-            }
-
-            tabla.innerHTML += `
-                <tr>
-                    <td>${i.producto}</td>
-                    <td>${i.stock}</td>
-                    <td>${i.stock_minimo}</td>
-                    <td>${estado}</td>
-                    <td>
-                        <button onclick="editarInventario(${i.id}, ${i.id_producto}, ${i.stock}, ${i.stock_minimo})">✏️</button>
-                        <button onclick="eliminarInventario(${i.id})">🗑️</button>
-                    </td>
-                </tr>
-            `;
-        });
-
-    } catch (error) {
-        console.error(error);
-        mostrarToast("Error cargando inventario", "error");
+    if (data.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding:20px;">No se encontraron productos</td></tr>`;
+      return;
     }
+
+    data.forEach(i => {
+      let estado = '';
+      if (i.stock <= i.stock_minimo) {
+        estado = '🔴 Bajo';
+      } else if (i.stock <= i.stock_minimo * 2) {
+        estado = '🟡 Medio';
+      } else {
+        estado = '🟢 Alto';
+      }
+
+      tabla.innerHTML += `
+        <tr>
+          <td>${i.producto}</td>
+          <td>${i.stock}</td>
+          <td>${i.stock_minimo}</td>
+          <td>${estado}</td>
+          <td>
+            <button onclick="editarInventario(${i.id}, ${i.id_producto}, ${i.stock}, ${i.stock_minimo})">✏️</button>
+            <button onclick="eliminarInventario(${i.id})">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+
+  } catch (error) {
+    console.error(error);
+    mostrarToast("Error cargando inventario", "error");
+  }
 }
 
 // ➕ CARGAR PRODUCTOS EN SELECT

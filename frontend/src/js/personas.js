@@ -1,32 +1,41 @@
 // 🔄 CARGAR PERSONAS
 async function cargarPersonas() {
-    try {
-        const res = await fetch("http://localhost:3000/api/personas");
-        const data = await res.json();
+  try {
+    const termino = encodeURIComponent(
+      document.getElementById("filtroPersona")?.value.trim() || ""
+    );
 
-        const tabla = document.getElementById("tablaPersonas");
-        tabla.innerHTML = "";
+    const res = await fetch(`http://localhost:3000/api/personas?buscar=${termino}`);
+    const data = await res.json();
 
-        data.forEach((p) => {
-            tabla.innerHTML += `
-                <tr>
-                    <td>${p.nombre}</td>
-                    <td>${p.apellido}</td>
-                    <td>${p.cedula}</td>
-                    <td>${p.telefono}</td>
-                    <td>${p.correo}</td>
-                    <td>${p.direccion}</td>
-                    <td>
-                        <button onclick="editarPersona(${p.id}, \`${p.nombre}\`, \`${p.apellido}\`, \`${p.cedula}\`,\`${p.telefono}\`, \`${p.correo}\`, \`${p.direccion}\`)">✏️</button>
-                        <button onclick="eliminarPersona(${p.id})">🗑️</button>
-                    </td>
-                </tr>
-            `;
-        });
-    } catch (error) {
-        console.error(error);
-        mostrarToast("Error cargando personas", "error");
+    const tabla = document.getElementById("tablaPersonas");
+    tabla.innerHTML = "";
+
+    if (data.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#999; padding:20px;">No se encontraron personas</td></tr>`;
+      return;
     }
+
+    data.forEach((p) => {
+      tabla.innerHTML += `
+        <tr>
+          <td>${p.nombre}</td>
+          <td>${p.apellido}</td>
+          <td>${p.cedula}</td>
+          <td>${p.telefono}</td>
+          <td>${p.correo}</td>
+          <td>${p.direccion}</td>
+          <td>
+            <button onclick="editarPersona(${p.id}, \`${p.nombre}\`, \`${p.apellido}\`, \`${p.cedula}\`, \`${p.telefono}\`, \`${p.correo}\`, \`${p.direccion}\`)">✏️</button>
+            <button onclick="eliminarPersona(${p.id})">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+  } catch (error) {
+    console.error(error);
+    mostrarToast("Error cargando personas", "error");
+  }
 }
 
 // ➕ MOSTRAR FORM
