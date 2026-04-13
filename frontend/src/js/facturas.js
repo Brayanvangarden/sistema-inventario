@@ -9,7 +9,7 @@ async function cargarFacturas() {
     const tabla = document.getElementById("tablaFacturas");
     tabla.innerHTML = "";
 
-    data.forEach(f => {
+    data.forEach((f) => {
       const fila = `
         <tr>
           <td>${f.id}</td>
@@ -19,16 +19,20 @@ async function cargarFacturas() {
           <td>₡${parseFloat(f.total).toFixed(2)}</td>
           <td>${f.estado}</td>
           <td>
-            <button onclick="verFactura(${f.id})"
-              style="background:#2196F3; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
-              👁 Ver
-            </button>
-          </td>
+  <button onclick="verFactura(${f.id})"
+    style="background:#2196F3; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
+    👁 Ver
+  </button>
+
+  <button onclick="imprimirDesdeLista(${f.id})"
+    style="background:#ff9800; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; margin-left:5px;">
+    🖨
+  </button>
+</td>
         </tr>
       `;
       tabla.innerHTML += fila;
     });
-
   } catch (error) {
     console.error(error);
     mostrarToast("Error al cargar facturas", "error");
@@ -65,7 +69,7 @@ async function cargarDetalleFactura() {
     const res = await fetch("http://localhost:3000/api/ventas/detalle/todas");
     const data = await res.json();
 
-    const factura = data.find(f => f.id === id);
+    const factura = data.find((f) => f.id === id);
 
     if (!factura) {
       alert("Factura no encontrada");
@@ -96,7 +100,7 @@ async function cargarDetalleFactura() {
     const detalleDiv = document.getElementById("detalle");
     detalleDiv.innerHTML = "";
 
-    factura.detalles.forEach(d => {
+    factura.detalles.forEach((d) => {
       detalleDiv.innerHTML += `
         <div style="display:grid; grid-template-columns:2fr 0.5fr 1fr 1fr; padding: 4px 0; border-bottom:1px dotted #eee; font-size:12px;">
           <span>${d.nombre}</span>
@@ -108,9 +112,9 @@ async function cargarDetalleFactura() {
     });
 
     // ✅ TOTAL
-    document.getElementById("total").innerText =
-      parseFloat(factura.total).toFixed(2);
-
+    document.getElementById("total").innerText = parseFloat(
+      factura.total,
+    ).toFixed(2);
   } catch (error) {
     console.error(error);
     alert("Error al cargar factura");
@@ -137,9 +141,9 @@ function descargarFactura() {
   const opciones = {
     margin: 10,
     filename: `Factura_${id}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    jsPDF: { unit: "mm", format: "a5", orientation: "portrait" },
   };
 
   html2pdf().set(opciones).from(ticket).save();
@@ -154,7 +158,7 @@ async function reenviarFactura() {
   try {
     const res = await fetch(`http://localhost:3000/api/ventas/reenviar/${id}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
 
     const data = await res.json();
@@ -165,9 +169,76 @@ async function reenviarFactura() {
       // 👇 Muestra el motivo, ej: "El cliente no tiene correo registrado"
       mostrarToast(`⚠️ ${data.error}`, "error");
     }
-
   } catch (error) {
     console.error(error);
     mostrarToast("No se pudo conectar con el servidor", "error");
+  }
+}
+
+function imprimirFactura() {
+  const contenido = document.getElementById("ticketFactura").innerHTML;
+
+  const ventana = window.open("", "", "width=400,height=600");
+
+  ventana.document.write(`
+    <html>
+      <head>
+        <title>Imprimir Factura</title>
+        <style>
+          body {
+            font-family: 'Courier New', monospace;
+            padding: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        ${contenido}
+      </body>
+    </html>
+  `);
+
+  ventana.document.close();
+  ventana.print();
+}
+
+async function imprimirDesdeLista(id) {
+  try {
+    const res = await fetch("http://localhost:3000/api/ventas/detalle/todas");
+    const data = await res.json();
+
+    const factura = data.find(f => f.id === id);
+    if (!factura) return alert("Factura no encontrada");
+
+    // 🧾 Generar HTML tipo ticket
+    let html = `
+      <div style="font-family:Courier New; font-size:12px;">
+        <h3 style="text-align:center;">Factura #${factura.id}</h3>
+        <p>Fecha: ${new Date(factura.fecha).toLocaleString()}</p>
+        <p>Cliente: ${factura.cliente}</p>
+        <p>Usuario: ${factura.usuario}</p>
+        <hr/>
+    `;
+
+    factura.detalles.forEach(d => {
+      html += `
+        <p>${d.cantidad} x ${d.nombre} - ₡${parseFloat(d.subtotal).toFixed(2)}</p>
+      `;
+    });
+
+    html += `
+        <hr/>
+        <h3>Total: ₡${parseFloat(factura.total).toFixed(2)}</h3>
+      </div>
+    `;
+
+    const ventana = window.open('', '', 'width=400,height=600');
+
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.print();
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al imprimir");
   }
 }
