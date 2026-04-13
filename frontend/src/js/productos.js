@@ -5,34 +5,43 @@ const limite = 15;
 // 🔄 CARGAR PRODUCTOS
 async function cargarProductos() {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/productos?page=${paginaActual}&limit=${limite}`,
+    const nombre = encodeURIComponent(
+      document.getElementById("filtroNombre")?.value.trim() || ""
     );
+
+    const url = `http://localhost:3000/api/productos?page=1&limit=${limite}&nombre=${nombre}`;
+
+    const res  = await fetch(url);
     const data = await res.json();
 
     const tabla = document.getElementById("tablaProductos");
     tabla.innerHTML = "";
 
+    if (data.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding:20px;">No se encontraron productos</td></tr>`;
+      return;
+    }
+
     data.forEach((p) => {
       tabla.innerHTML += `
-                <tr>
-                    <td>${p.nombre}</td>
-                    <td>${p.codigo}</td>
-                    <td>${p.categoria || "Sin categoría"}</td>
-                    <td>${p.precio_venta}</td>
-                    <td>
-                        <button onclick="editarProducto(${p.id}, \`${p.nombre}\`, \`${p.codigo}\`, ${p.id_categoria}, ${p.precio_compra}, ${p.precio_venta})">✏️</button>
-                        <button onclick="eliminarProducto(${p.id})">🗑️</button>
-                    </td>
-                </tr>
-            `;
+        <tr>
+          <td>${p.nombre}</td>
+          <td>${p.codigo}</td>
+          <td>${p.categoria || "Sin categoría"}</td>
+          <td>₡${parseFloat(p.precio_venta).toFixed(2)}</td>
+          <td>
+            <button onclick="editarProducto(${p.id}, \`${p.nombre}\`, \`${p.codigo}\`, ${p.id_categoria}, ${p.precio_compra}, ${p.precio_venta})">✏️</button>
+            <button onclick="eliminarProducto(${p.id})">🗑️</button>
+          </td>
+        </tr>
+      `;
     });
+
   } catch (error) {
     console.error(error);
     alert("Error cargando productos");
   }
 }
-
 // 🔄 PAGINACIÓN
 function siguiente() {
   paginaActual++;
@@ -176,29 +185,29 @@ function editarProducto(id, nombre, codigo, id_categoria, precio_compra, precio_
 let productoAEliminar = null;
 
 function eliminarProducto(id) {
-    productoAEliminar = id;
-    document.getElementById("modalEliminar").style.display = "flex";
+  productoAEliminar = id;
+  document.getElementById("modalEliminar").style.display = "flex";
 }
 
 function cerrarModal() {
-    document.getElementById("modalEliminar").style.display = "none";
+  document.getElementById("modalEliminar").style.display = "none";
 }
 
 async function confirmarEliminarProducto() {
-    const res = await fetch(`http://localhost:3000/api/productos/${productoAEliminar}`, {
-        method: 'DELETE'
-    });
+  const res = await fetch(`http://localhost:3000/api/productos/${productoAEliminar}`, {
+    method: 'DELETE'
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) {
-        mostrarToast(data.error || "Error", "error");
-        return;
-    }
+  if (!res.ok) {
+    mostrarToast(data.error || "Error", "error");
+    return;
+  }
 
-    mostrarToast("🗑️ Producto eliminado");
-    cerrarModal();
-    cargarProductos();
+  mostrarToast("🗑️ Producto eliminado");
+  cerrarModal();
+  cargarProductos();
 }
 
 function mostrarToast(mensaje, tipo = "success") {

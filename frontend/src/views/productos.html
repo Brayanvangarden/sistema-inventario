@@ -34,6 +34,18 @@
         <button onclick="cancelarProducto()" style="padding:10px 20px; background-color:#ccc; color:#333; border:none; border-radius:6px; cursor:pointer;">❌ Cancelar</button>
     </div>
 </div>
+<div style="width:90%; margin:auto; margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
+
+  <input type="text" id="filtroNombre" placeholder="🔍 Nombre"
+    style="padding:8px; border-radius:6px; border:1px solid #ccc;" />
+
+
+  <button onclick="cargarProductos()"
+    style="background:#4FACFE; color:white; border:none; padding:8px 15px; border-radius:6px;">
+    Filtrar
+  </button>
+
+</div>
 
 <!-- Tabla de productos -->
 <table style="width:90%; margin:auto; margin-top:20px; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
