@@ -1,0 +1,24 @@
+<h2 style="text-align:center; color:#4CAF50; margin-bottom:20px;">🧾 Facturas</h2>
+
+<div style="text-align:center; margin-bottom:20px;">
+    <button onclick="irAVentas()" 
+        style="padding:10px 20px; background-color:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">
+        💰 Facturar
+    </button>
+</div>
+
+<table style="width:90%; margin:auto; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+    <thead style="background:#f2f2f2;">
+        <tr>
+            <th style="padding:12px;">Fecha</th>
+            <th style="padding:12px;">Cliente</th>
+            <th style="padding:12px;">Usuario</th>
+            <th style="padding:12px;">Total</th>
+            <th style="padding:12px;">Estado</th>
+            <th style="padding:12px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaFacturas"></tbody>
+</table>
+
+<div id="toast" class="toast"></div>

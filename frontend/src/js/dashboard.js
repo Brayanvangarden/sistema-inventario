@@ -68,7 +68,18 @@ async function cargarVista(vista) {
       setTimeout(() => {
         buscarProductos();
       }, 50);
+    } 
+    if (vista === "facturas") {
+      setTimeout(() => {
+        cargarFacturas();
+      }, 50);
     }
+
+    if (vista === "factura_detalle") {
+  setTimeout(() => {
+    cargarDetalleFactura();
+  }, 50);
+}
 
   } catch (error) {
     console.error("Error cargando vista:", error);
