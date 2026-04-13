@@ -2,51 +2,39 @@ import { pool } from '../config/db.js';
 
 // 📦 GET PERSONAS
 export const getPersonas = async (req, res) => {
-    try {
-        const { buscar } = req.query;
+  try {
+    const { buscar } = req.query;
+    const pagina = parseInt(req.query.page)  || 1;
+    const limite = parseInt(req.query.limit) || 10;
+    const offset = (pagina - 1) * limite;
 
-        let query = `
-            SELECT 
-                p.id,
-                p.nombre,
-                p.apellido,
-                p.telefono,
-                p.correo,
-                p.direccion,
-                p.cedula
-            FROM persona p
-            WHERE p.activo = 1
-        `;
+    let query = `
+      SELECT p.id, p.nombre, p.apellido, p.telefono, p.correo, p.direccion, p.cedula
+      FROM persona p
+      WHERE p.activo = 1
+    `;
 
-        const params = [];
+    const params = [];
 
-        // 🔍 FILTRO
-        if (buscar && buscar.trim() !== '') {
-            query += `
-                AND (
-                    LOWER(p.nombre) LIKE ? OR
-                    LOWER(p.apellido) LIKE ? OR
-                    LOWER(p.cedula) LIKE ?
-                )
-            `;
-
-            const filtro = `%${buscar.toLowerCase()}%`;
-            console.log('Buscar:', buscar);
-            params.push(filtro, filtro, filtro);
-        }
-
-        query += ` ORDER BY p.nombre ASC LIMIT 10`;
-
-        const [rows] = await pool.query(query, params);
-
-        res.json(rows);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+    if (buscar && buscar.trim() !== "") {
+      query += `
+        AND (LOWER(p.nombre) LIKE ? OR LOWER(p.apellido) LIKE ? OR LOWER(p.cedula) LIKE ?)
+      `;
+      const filtro = `%${buscar.toLowerCase()}%`;
+      params.push(filtro, filtro, filtro);
     }
-};
 
+    query += ` ORDER BY p.nombre ASC LIMIT ? OFFSET ?`;
+    params.push(limite, offset);
+
+    const [rows] = await pool.query(query, params);
+    res.json(rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
 // ➕ CREAR Persona
 export const createPersona = async (req, res) => {
     try {

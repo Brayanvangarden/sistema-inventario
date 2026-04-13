@@ -1,0 +1,96 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+
+/* Hero */
+.hero {
+  background: #fbeaf0;
+  border: 1px solid #f4c0d1;
+  border-radius: 16px;
+  text-align: center;
+  padding: 2rem 1.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-icon  { font-size: 42px; margin-bottom: 10px; }
+.hero-nombre { font-size: 22px; font-weight: 700; color: #72243e; margin-bottom: 4px; }
+.hero-sub   { font-size: 14px; color: #993556; }
+
+/* Grid info */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.info-card {
+  background: white;
+  border: 1px solid #f0dde6;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.info-label {
+  font-size: 11px;
+  color: #993556;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+
+.info-valor {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 2px;
+}
+
+.info-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+
+.chip {
+  background: #fbeaf0;
+  color: #72243e;
+  border: 1px solid #f4c0d1;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+/* Botones */
+.botones {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+
+.btn:hover { opacity: .88; }
+.btn-wa    { background: #25D366; }
+.btn-maps  { background: #4285F4; }
+
+/* Mapa */
+.mapa-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #f0dde6;
+}

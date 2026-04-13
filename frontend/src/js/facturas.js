@@ -1,37 +1,35 @@
 const API = "http://localhost:3000/api/ventas";
+let paginaActualFacturas = 1;
+const limiteFacturas = 10;
 
 // 🚀 Cargar facturas
 async function cargarFacturas() {
+  paginaActualFacturas = 1; // resetear al filtrar
+  await fetchFacturas();
+}
+
+async function fetchFacturas() {
   try {
-    const res = await fetch(API);
-    let data = await res.json(); // 👈 cambio: ahora es let
+    const cliente = encodeURIComponent(document.getElementById("filtroCliente")?.value.trim() || "");
+    const fecha   = document.getElementById("filtroFecha")?.value || "";
+    const estado  = document.getElementById("filtroEstado")?.value || "";
 
-    // 🔎 FILTROS (nuevo)
-    const clienteFiltro = document.getElementById("filtroCliente")?.value.toLowerCase() || "";
-    const fechaFiltro = document.getElementById("filtroFecha")?.value || "";
-    const estadoFiltro = document.getElementById("filtroEstado")?.value || "";
+    const url = `${API}?page=${paginaActualFacturas}&limit=${limiteFacturas}&cliente=${cliente}&fecha=${fecha}&estado=${estado}`;
 
-    // 🧠 Aplicar filtros (nuevo)
-    data = data.filter((f) => {
-      const coincideCliente =
-        !clienteFiltro ||
-        (f.cliente && f.cliente.toLowerCase().includes(clienteFiltro));
-
-      const coincideEstado =
-        !estadoFiltro || f.estado === estadoFiltro;
-
-      const coincideFecha =
-  !fechaFiltro ||
-  new Date(f.fecha).toLocaleDateString("en-CA") === fechaFiltro; // 👈 formato YYYY-MM-DD sin desfase
-
-      return coincideCliente && coincideEstado && coincideFecha;
-    });
+    const res  = await fetch(url);
+    const data = await res.json();
 
     const tabla = document.getElementById("tablaFacturas");
     tabla.innerHTML = "";
 
+    if (data.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#999; padding:20px;">No se encontraron facturas</td></tr>`;
+      actualizarInfoFacturas();
+      return;
+    }
+
     data.forEach((f) => {
-      const fila = `
+      tabla.innerHTML += `
         <tr>
           <td>${f.id}</td>
           <td>${new Date(f.fecha).toLocaleString()}</td>
@@ -44,7 +42,6 @@ async function cargarFacturas() {
               style="background:#2196F3; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
               👁 Ver
             </button>
-
             <button onclick="imprimirDesdeLista(${f.id})"
               style="background:#ff9800; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; margin-left:5px;">
               🖨
@@ -52,13 +49,30 @@ async function cargarFacturas() {
           </td>
         </tr>
       `;
-      tabla.innerHTML += fila;
     });
+
+    actualizarInfoFacturas();
 
   } catch (error) {
     console.error(error);
     mostrarToast("Error al cargar facturas", "error");
   }
+}
+
+function siguienteFacturas() {
+  paginaActualFacturas++;
+  fetchFacturas();
+}
+
+function anteriorFacturas() {
+  if (paginaActualFacturas > 1) {
+    paginaActualFacturas--;
+    fetchFacturas();
+  }
+}
+
+function actualizarInfoFacturas() {
+  document.getElementById("paginaInfoFacturas").innerText = `Página ${paginaActualFacturas}`;
 }
 
 // 👉 Ir a ventas

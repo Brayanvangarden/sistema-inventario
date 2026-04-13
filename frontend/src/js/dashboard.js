@@ -80,6 +80,9 @@ async function cargarVista(vista) {
     cargarDetalleFactura();
   }, 50);
 }
+ if (vista === "ventas") {
+    
+    } 
 
   } catch (error) {
     console.error("Error cargando vista:", error);
