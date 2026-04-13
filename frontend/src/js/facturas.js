@@ -4,7 +4,28 @@ const API = "http://localhost:3000/api/ventas";
 async function cargarFacturas() {
   try {
     const res = await fetch(API);
-    const data = await res.json();
+    let data = await res.json(); // 👈 cambio: ahora es let
+
+    // 🔎 FILTROS (nuevo)
+    const clienteFiltro = document.getElementById("filtroCliente")?.value.toLowerCase() || "";
+    const fechaFiltro = document.getElementById("filtroFecha")?.value || "";
+    const estadoFiltro = document.getElementById("filtroEstado")?.value || "";
+
+    // 🧠 Aplicar filtros (nuevo)
+    data = data.filter((f) => {
+      const coincideCliente =
+        !clienteFiltro ||
+        (f.cliente && f.cliente.toLowerCase().includes(clienteFiltro));
+
+      const coincideEstado =
+        !estadoFiltro || f.estado === estadoFiltro;
+
+      const coincideFecha =
+  !fechaFiltro ||
+  new Date(f.fecha).toLocaleDateString("en-CA") === fechaFiltro; // 👈 formato YYYY-MM-DD sin desfase
+
+      return coincideCliente && coincideEstado && coincideFecha;
+    });
 
     const tabla = document.getElementById("tablaFacturas");
     tabla.innerHTML = "";
@@ -19,20 +40,21 @@ async function cargarFacturas() {
           <td>₡${parseFloat(f.total).toFixed(2)}</td>
           <td>${f.estado}</td>
           <td>
-  <button onclick="verFactura(${f.id})"
-    style="background:#2196F3; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
-    👁 Ver
-  </button>
+            <button onclick="verFactura(${f.id})"
+              style="background:#2196F3; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;">
+              👁 Ver
+            </button>
 
-  <button onclick="imprimirDesdeLista(${f.id})"
-    style="background:#ff9800; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; margin-left:5px;">
-    🖨
-  </button>
-</td>
+            <button onclick="imprimirDesdeLista(${f.id})"
+              style="background:#ff9800; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; margin-left:5px;">
+              🖨
+            </button>
+          </td>
         </tr>
       `;
       tabla.innerHTML += fila;
     });
+
   } catch (error) {
     console.error(error);
     mostrarToast("Error al cargar facturas", "error");

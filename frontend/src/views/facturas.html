@@ -1,10 +1,31 @@
 <h2 style="text-align:center; color:#4CAF50; margin-bottom:20px;">🧾 Facturas</h2>
 
-<div style="text-align:center; margin-bottom:20px;">
+<!-- <div style="text-align:center; margin-bottom:20px;">
     <button onclick="irAVentas()" 
         style="padding:10px 20px; background-color:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">
         💰 Facturar
     </button>
+</div> -->
+<div style="width:90%; margin:auto; margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
+
+  <input type="text" id="filtroCliente" placeholder="🔍 Cliente"
+    style="padding:8px; border-radius:6px; border:1px solid #ccc;" />
+
+  <input type="date" id="filtroFecha"
+    style="padding:8px; border-radius:6px; border:1px solid #ccc;" />
+
+  <select id="filtroEstado"
+  style="padding:8px; border-radius:6px; border:1px solid #ccc;">
+  <option value="">Todos los estados</option>
+  <option value="PAGADA">Pagada</option>      <!-- 👈 mayúsculas como en DB -->
+  <option value="PENDIENTE">Pendiente</option>
+</select>
+
+  <button onclick="cargarFacturas()"
+    style="background:#4CAF50; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer;">
+    Filtrar
+  </button>
+
 </div>
 
 <table style="width:90%; margin:auto; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
