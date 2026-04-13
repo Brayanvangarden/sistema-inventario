@@ -11,13 +11,15 @@
 <nav class="sidebar" role="navigation" aria-label="Menú principal">
 
   <div class="sidebar-logo">
-    <span class="sidebar-logo-icon">💄</span>
     <p class="sidebar-logo-texto">Suplidora y Academia Style</p>
   </div>
 
   <div class="sidebar-user" id="userInfo"></div>
 
   <ul class="menu-list">
+    <li class="menu-item active" onclick="cargarVista('home')">
+    <span class="menu-icon">🏠</span> Inicio
+  </li>
     <li class="menu-item" onclick="cargarVista('productos')">
       <span class="menu-icon">📦</span> Productos
     </li>
@@ -60,6 +62,7 @@
 <script src="../js/facturas.js" defer></script>
 <script src="../js/ventas.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 </body>
 </html>
