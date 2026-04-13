@@ -41,7 +41,7 @@ async function cargarFacturas() {
 
 // 👉 Ir a ventas
 function irAVentas() {
-  window.location.href = "ventas.html";
+  window.cargarVista("ventas");
 }
 
 // 👉 Ver detalle
@@ -59,7 +59,6 @@ function mostrarToast(msg, tipo = "success") {
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
 
-// 🧾 DETALLE DE FACTURA
 // 🧾 DETALLE DE FACTURA
 async function cargarDetalleFactura() {
   const id = parseInt(sessionStorage.getItem("facturaId"));
