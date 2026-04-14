@@ -171,6 +171,12 @@ async function cargarVista(vista) {
     if (vista === "ventas") {
     }
 
+    if (vista === "proveedores") {
+      setTimeout(async () => {
+        await cargarProveedores(); 
+      }, 50);
+    }
+
     if (vista === "home") {
       setTimeout(() => {
         cargarHome();
