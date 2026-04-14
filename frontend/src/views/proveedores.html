@@ -1,0 +1,90 @@
+<h2 style="text-align:center; color:#4FACFE; margin-bottom:20px;">🏢 Gestión de Proveedores</h2>
+
+<div style="text-align:center; margin-bottom:20px;">
+    <button onclick="mostrarFormularioProveedor()" 
+        style="padding:10px 20px; background-color:#4CAF50; color:white; border:none; border-radius:6px; cursor:pointer; font-size:16px;">
+        + Nuevo Proveedor
+    </button>
+</div>
+
+<!-- Formulario -->
+<div id="formularioProveedor" 
+    style="display:none; margin-top:20px; max-width:500px; margin-left:auto; margin-right:auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+
+    <input type="hidden" id="idProveedor">
+
+    <!-- SELECT PERSONA -->
+    <div style="margin-bottom:15px;">
+        <select id="id_persona_proveedor"
+            style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+            <option value="">Seleccione persona</option>
+        </select>
+    </div>
+
+    <!-- EMPRESA -->
+    <div style="margin-bottom:15px;">
+        <input type="text" id="empresa" placeholder="Nombre de la empresa"
+            style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;">
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:10px;">
+        <button onclick="guardarProveedor()" 
+            style="padding:10px 20px; background-color:#4FACFE; color:white; border:none; border-radius:6px; cursor:pointer;">
+            💾 Guardar
+        </button>
+        <button onclick="cancelarProveedor()" 
+            style="padding:10px 20px; background-color:#ccc; color:#333; border:none; border-radius:6px; cursor:pointer;">
+            ❌ Cancelar
+        </button>
+    </div>
+</div>
+
+<!-- Buscador -->
+<div style="width:90%; margin:auto; margin-bottom:15px;">
+  <input type="text" id="filtroProveedor" placeholder="🔍 Buscar por empresa..."
+    style="padding:8px; border-radius:6px; border:1px solid #ccc; width:300px;"
+    oninput="cargarProveedores()" />
+</div>
+
+<!-- Tabla -->
+<table style="width:90%; margin:auto; margin-top:20px; border-collapse:collapse; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+    <thead style="background:#f2f2f2;">
+        <tr>
+            <th style="padding:12px;">Empresa</th>
+            <th style="padding:12px;">Persona</th>
+            <th style="padding:12px;">Teléfono</th>
+            <th style="padding:12px;">Email</th>
+            <th style="padding:12px;">Dirección</th>
+            <th style="padding:12px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaProveedores"></tbody>
+</table>
+
+<!-- Modal eliminar -->
+<div id="modalEliminarProveedor" class="modal">
+  <div class="modal-content" style="width: 350px;">
+    <h3 style="margin-bottom:15px;">🗑️ Eliminar proveedor</h3>
+    <p style="margin-bottom:20px;">¿Seguro que deseas eliminar este proveedor?</p>
+    <div style="display:flex; justify-content:center; gap:15px;">
+        <button onclick="confirmarEliminarProveedor()" class="btn-eliminar">Eliminar</button>
+        <button onclick="cerrarModalProveedor()" class="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div style="margin-top:10px; display:flex; justify-content:center; align-items:center; gap:15px;">
+  <button onclick="anteriorProveedores()"
+    style="padding:8px 12px; border:none; border-radius:6px; background:#4CAF50; color:white; cursor:pointer;">
+    ⬅ Anterior
+  </button>
+
+  <span id="paginaInfoProveedores" style="font-weight:bold;">Página 1</span>
+
+  <button onclick="siguienteProveedores()"
+    style="padding:8px 12px; border:none; border-radius:6px; background:#4CAF50; color:white; cursor:pointer;">
+    Siguiente ➡
+  </button>
+</div>
+
+<!-- Toast -->
+<div id="toastProveedor" class="toast"></div>

@@ -14,6 +14,10 @@ export const getProveedores = async (req, res) => {
       SELECT 
         p.id,
         p.empresa,
+        i.nombre,
+        i.correo,
+        i.telefono,
+        i.direccion,
         p.id_persona
       FROM proveedores p
       INNER JOIN persona i ON p.id_persona = i.id
