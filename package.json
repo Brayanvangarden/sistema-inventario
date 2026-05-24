@@ -1,0 +1,41 @@
+{
+  "name": "sistema-inventario",
+  "version": "1.0.0",
+  "description": "Sistema de inventario Style",
+  "main": "electron.js",
+
+  "scripts": {
+    "electron": "electron .",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start",
+    "build": "electron-builder"
+  },
+
+  "build": {
+    "appId": "com.style.inventario",
+    "productName": "Sistema Inventario Style",
+
+    "directories": {
+      "output": "dist"
+    },
+
+    "files": [
+      "electron.js",
+      "backend/**/*",
+      "frontend/**/*",
+      "node_modules/**/*"
+    ],
+
+    "win": {
+      "target": "nsis"
+    }
+  },
+
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^42.0.0",
+    "electron-builder": "^26.8.1",
+    "wait-on": "^9.0.5"
+  }
+}
