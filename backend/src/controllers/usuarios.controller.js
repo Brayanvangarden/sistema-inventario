@@ -10,7 +10,7 @@ export const getUsuarios = async (req, res) => {
                 u.id,
                 u.id_persona,
                 u.usuario,
-                CONCAT(p.nombre, ' ', p.apellido) AS persona,
+                p.nombre || ' ' || p.apellido AS persona,
                 p.correo,
                 r.nombre AS rol,
                 u.id_rol

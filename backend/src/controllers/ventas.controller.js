@@ -90,7 +90,7 @@ export const getVentas = async (req, res) => {
     let query = `
       SELECT 
         f.id, f.fecha, f.total, f.estado,
-        CONCAT(p.nombre, ' ', p.apellido) AS cliente,
+        p.nombre || ' ' || p.apellido AS cliente,
         u.usuario
       FROM factura f
       LEFT JOIN persona p ON f.id_persona = p.id
@@ -101,7 +101,7 @@ export const getVentas = async (req, res) => {
     const params = [];
 
     if (cliente && cliente.trim() !== "") {
-      query += ` AND LOWER(CONCAT(p.nombre, ' ', p.apellido)) LIKE ?`;
+      query += ` AND LOWER(p.nombre || ' ' || p.apellido) LIKE ?`;
       params.push(`%${cliente.toLowerCase()}%`);
     }
 
@@ -139,7 +139,7 @@ export const getVentaDetalle = async (req, res) => {
                 f.fecha,
                 f.total,
                 f.estado,
-                CONCAT(p.nombre, ' ', p.apellido) AS cliente,
+                p.nombre || ' ' || p.apellido AS cliente,
                 u.usuario
             FROM factura f
             LEFT JOIN persona p ON f.id_persona = p.id
@@ -265,7 +265,7 @@ export const getFacturasConDetalles = async (req, res) => {
         f.fecha,
         f.total,
         f.estado,
-        CONCAT(p.nombre, ' ', p.apellido) AS cliente,
+        p.nombre || ' ' || p.apellido AS cliente,
         u.usuario
       FROM factura f
       LEFT JOIN persona p ON f.id_persona = p.id
@@ -314,7 +314,7 @@ export const reenviarFactura = async (req, res) => {
         f.fecha,
         f.total,
         f.estado,
-        CONCAT(p.nombre, ' ', p.apellido) AS nombre_cliente,
+        p.nombre || ' ' || p.apellido AS nombre_cliente,
         p.correo AS correo_cliente,
         u.usuario
       FROM factura f
