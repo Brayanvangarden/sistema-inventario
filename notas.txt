@@ -1,0 +1,23 @@
+Qué se hizo
+El script se ejecutó correctamente en backend
+Generó el archivo:
+database.sqlite
+Cómo usarlo
+Desde backend ejecuta:
+
+Nota
+Si quieres volver a generar la base desde cero, borra:
+
+database.sqlite
+---
+ué hizo npm run init-db
+creó el archivo database.sqlite
+leyó y ejecutó el SQL de style_sqlite.sql
+generó tablas y datos de ejemplo en la base SQLite
+Qué no hizo
+no arrancó el servidor Express
+no abrió la app Electron
+no ejecutó app.js
+Para iniciar el backend sí
+En backend debes usar:
+npm start

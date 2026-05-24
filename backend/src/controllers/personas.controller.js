@@ -46,19 +46,27 @@ export const createPersona = async (req, res) => {
         }
 
         // 🔍 VALIDAR DUPLICADO POR CORREO
-        const [existe] = await pool.query(
-            "SELECT id FROM persona WHERE correo = ?",
+        const [existeCorreo] = await pool.query(
+            "SELECT id FROM persona WHERE correo = ? LIMIT 1",
             [correo]
         );
 
-        if (existe.length > 0) {
+        if (existeCorreo.length > 0) {
             return res.status(400).json({ error: "El correo ya está registrado" });
         }
 
-        // ➕ INSERT
+        const [existeCedula] = await pool.query(
+            "SELECT id FROM persona WHERE cedula = ? LIMIT 1",
+            [cedula]
+        );
+
+        if (existeCedula.length > 0) {
+            return res.status(400).json({ error: "La cédula ya está registrada" });
+        }
+
         await pool.query(`
             INSERT INTO persona (nombre, apellido, telefono, correo, direccion, cedula)
-            VALUES (?, ?, ?, ?, ?,?)
+            VALUES (?, ?, ?, ?, ?, ?)
         `, [nombre, apellido, telefono, correo, direccion, cedula]);
 
         res.json({ message: "Persona creada correctamente" });
@@ -82,7 +90,7 @@ export const updatePersona = async (req, res) => {
 
         // 🔍 VERIFICAR QUE EXISTE
         const [persona] = await pool.query(
-            "SELECT id FROM persona WHERE id = ? AND activo = 1",
+            "SELECT id FROM persona WHERE id = ? AND activo = 1 LIMIT 1",
             [id]
         );
 
@@ -90,17 +98,24 @@ export const updatePersona = async (req, res) => {
             return res.status(404).json({ error: "Persona no encontrada" });
         }
 
-        // // 🔍 VALIDAR DUPLICADO DE CORREO (EXCLUYENDO EL MISMO ID)
-        // const [existe] = await pool.query(
-        //     "SELECT id FROM persona WHERE correo = ? AND id != ?",
-        //     [correo, id]
-        // );
+        const [existeCorreo] = await pool.query(
+            "SELECT id FROM persona WHERE correo = ? AND id != ? LIMIT 1",
+            [correo, id]
+        );
 
-        // if (existe.length > 0) {
-        //     return res.status(400).json({ error: "El correo ya está en uso" });
-        // }
+        if (existeCorreo.length > 0) {
+            return res.status(400).json({ error: "El correo ya está en uso" });
+        }
 
-        // 🔄 UPDATE
+        const [existeCedula] = await pool.query(
+            "SELECT id FROM persona WHERE cedula = ? AND id != ? LIMIT 1",
+            [cedula, id]
+        );
+
+        if (existeCedula.length > 0) {
+            return res.status(400).json({ error: "La cédula ya está en uso" });
+        }
+
         await pool.query(`
             UPDATE persona 
             SET nombre=?, apellido=?, telefono=?, correo=?, direccion=?, cedula=?

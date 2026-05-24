@@ -28,7 +28,7 @@ export const recuperarContrasena = async (req, res) => {
   try {
     // Buscar usuario + correo desde persona
     const [rows] = await pool.query(`
-      SELECT u.id, u.usuario, p.correo, CONCAT(p.nombre, ' ', p.apellido) AS nombre
+      SELECT u.id, u.usuario, p.correo, p.nombre || ' ' || p.apellido AS nombre
       FROM usuarios u
       INNER JOIN persona p ON u.id_persona = p.id
       WHERE u.usuario = ? AND u.activo = 1
